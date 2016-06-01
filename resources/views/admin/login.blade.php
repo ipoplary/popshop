@@ -1,4 +1,4 @@
-@extends('admin.auth.layout')
+@extends('admin.authLayout')
 
 @section('title', 'Log in')
 
@@ -30,7 +30,7 @@
                     <div class="col-xs-8">
                         <div>
                             <label>
-                                {!! Form::checkbox('remenber') !!}
+                                {!! Form::checkbox('remember') !!}
                                 Remember Me
                             </label>
                         </div>

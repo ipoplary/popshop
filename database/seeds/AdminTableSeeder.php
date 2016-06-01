@@ -16,7 +16,6 @@ class AdminTableSeeder extends Seeder
             'name' => 'admin',
             'email' => 'admin@admin',
             'password' => bcrypt('123456'),
-            'type' => 1,
         ]);
     }
 }

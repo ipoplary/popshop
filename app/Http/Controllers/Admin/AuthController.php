@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Auth;
+namespace App\Http\Controllers\Admin;
 
 use Auth;
 
@@ -77,20 +77,41 @@ class AuthController extends Controller
 
     public function getLogin()
     {
-        return view('admin.auth.login');
+        if(Auth::admin()->user())
+            return redirect('/');
+
+        return view('admin.login');
     }
 
     public function postLogin(AdminLoginRequest $request)
     {
         $name = $request->input('name');
         $password = $request->input('password');
+        $remember = ($request->input('remember') === '1')? true: false;
 
-        dd(Auth::attempt(['name'=>$name, 'password'=>$password]));
+        if( ! Auth::admin()->attempt(['name'=>$name, 'password'=>$password], $remember) ) {
+            $data = [
+                'err' => -1,
+                'msg' => '账号或密码错误！请重新登录！'
+            ];
+            return view('admin.login', $data);
+        }
+
+        return redirect('/');
+
+    }
+
+    public function getTest()
+    {
+        dd(Auth::admin()->getRecaller());
     }
 
     public function getRegister()
     {
-        return view('admin.auth.register');
+        // if(Auth::admin()->user())
+        //     return redirect('/');
+
+        return view('admin.register');
     }
 
     public function postRegister()
