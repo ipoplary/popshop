@@ -18,8 +18,8 @@ class CreateAdminsTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->integer('type');
-            $table->softDeletes();
-            $table->timestamps();
+            $table->nullableTimestamps();
+            $table->softDeletes()->nullable();
         });
     }
 

@@ -14,7 +14,7 @@
 
             <p class="login-box-msg">Sign in to start your session</p>
 
-            {!! Form::open(['url' => 'auth/login']) !!}
+            {!! Form::open(['url' => 'login']) !!}
 
                 <div class="form-group has-feedback">
                     {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Name']) !!}
@@ -44,7 +44,7 @@
             {!! Form::close() !!}
 
             {{-- <a href="#">I forgot my password</a><br>  --}}
-            <a href=" {{ url('auth/register') }} " class="text-center">Register a new membership</a>
+            <a href=" {{ url('register') }} " class="text-center">Register a new membership</a>
 
         </div>
         {{-- /.login-box-body --}}
@@ -70,8 +70,6 @@
             created: function() {
                 @if(isset($err) && $err !== 0)
                     swal("{{ $msg }}", "请输入正确的账号密码！", "warning");
-                @else
-                    alert(2);
                 @endif
             }
         });

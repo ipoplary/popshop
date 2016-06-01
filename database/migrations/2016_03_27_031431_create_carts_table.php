@@ -18,8 +18,8 @@ class CreateCartsTable extends Migration
             $table->integer('user');
             $table->integer('count');
             $table->decimal('crt_price', 8, 2);
-            $table->softDeletes();
-            $table->timestamps();
+            $table->nullableTimestamps();
+            $table->softDeletes()->nullable();
         });
     }
 

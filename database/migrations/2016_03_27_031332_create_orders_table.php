@@ -18,8 +18,8 @@ class CreateOrdersTable extends Migration
             $table->integer('status');
             $table->decimal('sum_price', 8, 2);
             $table->integer('user');
-            $table->softDeletes();
-            $table->timestamps();
+            $table->nullableTimestamps();
+            $table->softDeletes()->nullable();
         });
     }
 

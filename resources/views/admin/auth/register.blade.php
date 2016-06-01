@@ -11,7 +11,7 @@
         <div class="register-box-body">
             <p class="login-box-msg">Register a new admin</p>
 
-            {!! Form::open(['url' => 'auth/register']) !!}
+            {!! Form::open(['url' => 'register']) !!}
 
                 <div class="form-group has-feedback">
                     {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Name']) !!}
@@ -45,7 +45,7 @@
 
             {!! Form::close() !!}
 
-            <a href="{{ url('auth/login') }}" class="text-center">I already have a membership</a>
+            <a href="{{ url('login') }}" class="text-center">I already have a membership</a>
         </div>
         {{-- /.form-box --}}
     </div>

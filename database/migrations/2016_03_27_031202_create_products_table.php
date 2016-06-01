@@ -24,8 +24,8 @@ class CreateProductsTable extends Migration
             $table->text('description');
             $table->integer('icon');
             $table->string('banner');
-            $table->softDeletes();
-            $table->timestamps();
+            $table->nullableTimestamps();
+            $table->softDeletes()->nullable();
         });
     }
 

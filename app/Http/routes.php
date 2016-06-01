@@ -16,5 +16,14 @@ Route::get('/', function () {
 });
 
 Route::group(['namespace' => 'Admin', 'domain' => 'admin.popshop.dev', 'as' => 'admin'], function () {
-    Route::controller('auth', 'Auth\AuthController');
+
+    Route::group(['namespace' => 'Auth', 'as' => 'auth'], function () {
+
+        Route::get('login', 'AuthController@getLogin');
+        Route::post('login', 'AuthController@postLogin');
+
+        Route::get('register', 'AuthController@getRegister');
+        Route::post('register', 'AuthController@postRegister');
+
+    });
 });
