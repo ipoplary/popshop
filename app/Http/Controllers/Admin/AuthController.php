@@ -13,9 +13,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Models\Admin;
 
-use App\Http\Requests\AdminRegisterRequest;
-use App\Http\Requests\AdminLoginRequest;
-
 class AuthController extends Controller
 {
     /*
@@ -35,6 +32,8 @@ class AuthController extends Controller
 
     protected $loginPath = '/login';
 
+    protected $username = 'name';
+
     /**
      * Create a new authentication controller instance.
      *
@@ -51,12 +50,13 @@ class AuthController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function registerValidator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|max:255',
+            'username' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|confirmed|min:6',
+            'password_confirmation' => 'required|min:6',
         ]);
     }
 
@@ -77,27 +77,37 @@ class AuthController extends Controller
 
     public function getLogin()
     {
-        if(Auth::admin()->user())
-            return redirect('/');
-
         return view('admin.login');
     }
 
-    public function postLogin(AdminLoginRequest $request)
+    public function postLogin(Request $request)
     {
-        $name = $request->input('name');
-        $password = $request->input('password');
-        $remember = ($request->input('remember') === '1')? true: false;
 
-        if( ! Auth::admin()->attempt(['name'=>$name, 'password'=>$password], $remember) ) {
-            $data = [
-                'err' => -1,
-                'msg' => '账号或密码错误！请重新登录！'
-            ];
-            return view('admin.login', $data);
+        $this->validate($request, [
+            $this->loginUsername() => 'required', 'password' => 'required',
+        ]);
+
+        $throttles = $this->isUsingThrottlesLoginsTrait();
+
+        if ($throttles && $this->hasTooManyLoginAttempts($request)) {
+            return $this->sendLockoutResponse($request);
         }
 
-        return redirect('/');
+        $credentials = $this->getCredentials($request);
+
+        if (Auth::admin()->attempt($credentials, $request->has('remember'))) {
+            return $this->handleUserWasAuthenticated($request, $throttles);
+        }
+
+        if ($throttles) {
+            $this->incrementLoginAttempts($request);
+        }
+
+        return redirect($this->loginPath())
+            ->withInput($request->only($this->loginUsername(), 'remember'))
+            ->withErrors([
+                $this->loginUsername() => $this->getFailedLoginMessage(),
+            ]);
 
     }
 
@@ -108,14 +118,23 @@ class AuthController extends Controller
 
     public function getRegister()
     {
-        // if(Auth::admin()->user())
-        //     return redirect('/');
 
         return view('admin.register');
     }
 
-    public function postRegister()
+    public function postRegister(Request $request)
     {
-        var_dump(234);
+
+        $validator = $this->registerValidator($request->all());
+
+        if ($validator->fails()) {
+            $this->throwValidationException(
+                $request, $validator
+            );
+        }
+
+        Auth::admin()->login($this->create($request->all()));
+
+        return redirect($this->redirectPath());
     }
 }

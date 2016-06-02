@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="form-group has-feedback">
-                    {!! Form::password('comfirm_password', ['class' => 'form-control', 'placeholder' => 'Retype password']) !!}
+                    {!! Form::password('password_confirmation', ['class' => 'form-control', 'placeholder' => 'Retype password']) !!}
                     <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
                 </div>
 
@@ -48,6 +48,16 @@
             <a href="{{ url('login') }}" class="text-center">I already have a membership</a>
         </div>
         {{-- /.form-box --}}
+
+        @if (count($errors) > 0)
+            <div class="alert alert-danger">
+                <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+                </ul>
+            </div>
+        @endif
     </div>
     {{-- /.register-box --}}
 @endsection
