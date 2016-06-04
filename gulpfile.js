@@ -25,9 +25,12 @@ gulp.task("copyfiles", function() {
     gulp.src("vendor/bower_dl/font-awesome/less/**")
         .pipe(gulp.dest("resources/assets/less/font-awesome"));
 
+    gulp.src("vendor/bower_dl/font-awesome/fonts/**")
+        .pipe(gulp.dest("public/assets/fonts"));
+
     // sweetalert
     gulp.src("vendor/bower_dl/sweetalert/dist/sweetalert.css")
-        .pipe(gulp.dest('public/assets/css'));
+        .pipe(gulp.dest('resources/assets/css'));
 
     gulp.src("vendor/bower_dl/sweetalert/dist/sweetalert.min.js")
         .pipe(gulp.dest('public/assets/js/'));
@@ -49,7 +52,10 @@ gulp.task("copyfiles", function() {
         .pipe(gulp.dest('resources/assets/js/'));
 
     gulp.src("vendor/bower_dl/AdminLTE/dist/css/AdminLTE.css")
-        .pipe(gulp.dest('public/assets/css/'));
+        .pipe(gulp.dest('resources/assets/css/'));
+
+    gulp.src("vendor/bower_dl/AdminLTE/dist/css/skins/_all-skins.min.css")
+        .pipe(gulp.dest('resources/assets/css/'));
 
     gulp.src("vendor/bower_dl/AdminLTE/plugins/**")
         .pipe(gulp.dest('public/assets/js/plugins'));
@@ -69,11 +75,17 @@ gulp.task("copyfiles", function() {
 elixir(function(mix) {
 
     // 合并 scripts
-    mix.scripts(['js/jquery.js', 'js/bootstrap.js', 'js/vue.js', 'js/vue-resource.js', 'js/vue-async-data.js'],
+    mix.scripts(['js/jquery.js', 'js/bootstrap.js', 'js/vue.js', 'js/vue-resource.js', 'js/vue-async-data.js', 'js/app.js'],
         'public/assets/js/admin.js',
         'resources/assets'
     );
 
     // 编译 Less
-    mix.less('admin.less', 'public/assets/css/admin.css');
+    mix.less('admin.less', 'resources/assets/css/admin.css');
+
+    // 合并 css
+    mix.styles(['css/admin.css', 'css/sweetalert.css', 'css/AdminLTE.css', 'css/_all-skins.min.css'],
+        'public/assets/css/admin.css',
+        'resources/assets'
+    );
 });

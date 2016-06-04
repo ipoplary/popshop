@@ -77,7 +77,7 @@ class AuthController extends Controller
 
     public function getLogin()
     {
-        return view('admin.login');
+        return view('admin.auth.login');
     }
 
     public function postLogin(Request $request)
@@ -119,7 +119,7 @@ class AuthController extends Controller
     public function getRegister()
     {
 
-        return view('admin.register');
+        return view('admin.auth.register');
     }
 
     public function postRegister(Request $request)
