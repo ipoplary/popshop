@@ -68,8 +68,28 @@
                     <ul class="sidebar-menu">
                         <li class="header">MAIN NAVIGATION</li>
                         <li>
-                            <a href="../widgets.html">
-                                <i class="fa fa-th"></i> <span>Widgets</span>
+                            <a href=" {{ url('home') }} ">
+                                <i class="fa fa-home"></i> <span>Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href=" {{ url('category') }} ">
+                                <i class="fa fa-tags"></i> <span>Category</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href=" {{ url('product') }} ">
+                                <i class="fa fa-gift"></i> <span>Product</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href=" {{ url('order') }} ">
+                                <i class="fa fa-reorder"></i> <span>Order</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href=" {{ url('user') }} ">
+                                <i class="fa fa-user"></i> <span>User</span>
                             </a>
                         </li>
                     </ul>
@@ -91,20 +111,9 @@
                 <section class="content">
                     <!-- Default box -->
                     <div class="box">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Title</h3>
-                            <div class="box-tools pull-right">
-                                <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
-                                    <i class="fa fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
-                                    <i class="fa fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
 
-                        <div class="box-body">
-                            Start creating your amazing application!
+                        <div class="box-body" id="@yield('app')">
+                            @yield('content')
                         </div>
                         <!-- /.box-body -->
                     </div>
@@ -122,5 +131,8 @@
 
     <script src=" {{ asset('assets/js/sweetalert.min.js') }} "></script>
 
+    <script>
+        @yield('script')
+    </script>
   </body>
 </html>

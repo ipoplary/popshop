@@ -21,8 +21,11 @@ Route::group(['namespace' => 'Admin', 'domain' => 'admin.popshop.dev', 'as' => '
 
         Route::get('test', 'AuthController@getTest');
 
-        // Route::controller('/', 'HomeController');
+        Route::get('/', 'HomeController@getIndex');
+
         Route::controller('home', 'HomeController');
+
+        Route::controller('category', 'CategoryController');
 });
 
 
