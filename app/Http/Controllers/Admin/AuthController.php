@@ -111,10 +111,14 @@ class AuthController extends Controller
 
     }
 
-    public function getTest()
+
+    public function getLogout()
     {
-        dd(Auth::admin()->getRecaller());
+        Auth::admin()->logout();
+
+        return redirect('login');
     }
+
 
     public function getRegister()
     {

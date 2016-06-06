@@ -18,11 +18,10 @@
         <div class="wrapper">
             <header class="main-header">
                 <!-- Logo -->
-                <a href="../../index2.html" class="logo">
-                    <!-- mini logo for sidebar mini 50x50 pixels -->
-                    <span class="logo-mini"><b>A</b>LT</span>
+                <a href=" {{ url('home') }} " class="logo">
+
                     <!-- logo for regular state and mobile devices -->
-                    <span class="logo-lg"><b>Admin</b>LTE</span>
+                    <span class="logo-lg"><b>Pop</b>Shop</span>
                 </a>
                 <!-- Header Navbar: style can be found in header.less -->
                 <nav class="navbar navbar-static-top">
@@ -38,16 +37,13 @@
                             <!-- User Account: style can be found in dropdown.less -->
                             <li class="dropdown user user-menu">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <span class="hidden-xs">Alexander Pierce</span>
+                                    <span class="hidden-xs">{{ isset(Auth::admin()->user()->name)? Auth::admin()->user()->name: '' }}</span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <!-- Menu Footer-->
                                     <li class="user-footer">
-                                        <div class="pull-left">
-                                            <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                        </div>
                                         <div class="pull-right">
-                                            <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                            <a href=" {{ url('logout') }} " class="btn btn-default btn-flat">Sign out</a>
                                         </div>
                                     </li>
                                 </ul>
@@ -66,30 +62,30 @@
                 <section class="sidebar">
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
-                        <li class="header">MAIN NAVIGATION</li>
+                        <li class="header">导航</li>
                         <li>
                             <a href=" {{ url('home') }} ">
-                                <i class="fa fa-home"></i> <span>Home</span>
+                                <i class="fa fa-home"></i> <span>主页</span>
                             </a>
                         </li>
                         <li>
                             <a href=" {{ url('category') }} ">
-                                <i class="fa fa-tags"></i> <span>Category</span>
+                                <i class="fa fa-tags"></i> <span>类别</span>
                             </a>
                         </li>
                         <li>
                             <a href=" {{ url('product') }} ">
-                                <i class="fa fa-gift"></i> <span>Product</span>
+                                <i class="fa fa-gift"></i> <span>商品</span>
                             </a>
                         </li>
                         <li>
                             <a href=" {{ url('order') }} ">
-                                <i class="fa fa-reorder"></i> <span>Order</span>
+                                <i class="fa fa-reorder"></i> <span>订单</span>
                             </a>
                         </li>
                         <li>
                             <a href=" {{ url('user') }} ">
-                                <i class="fa fa-user"></i> <span>User</span>
+                                <i class="fa fa-user"></i> <span>用户</span>
                             </a>
                         </li>
                     </ul>
