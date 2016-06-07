@@ -127,8 +127,6 @@
 
     <script src=" {{ asset('assets/js/sweetalert.min.js') }} "></script>
 
-    <script>
-        @yield('script')
-    </script>
+    @yield('script')
   </body>
 </html>

@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var elixir = require('laravel-elixir');
 
+elixir.config.sourcemaps = false;
 /**
  * 拷贝任何需要的文件
  *
