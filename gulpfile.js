@@ -20,21 +20,21 @@ gulp.task("copyfiles", function() {
         .pipe(gulp.dest("resources/assets/js/"));
 
     gulp.src("vendor/bower_dl/bootstrap/dist/fonts/**")
-        .pipe(gulp.dest("public/assets/fonts"));
+        .pipe(gulp.dest("public/build/assets/fonts"));
 
     // font-awesome
     gulp.src("vendor/bower_dl/font-awesome/less/**")
         .pipe(gulp.dest("resources/assets/less/font-awesome"));
 
     gulp.src("vendor/bower_dl/font-awesome/fonts/**")
-        .pipe(gulp.dest("public/assets/fonts"));
+        .pipe(gulp.dest("public/build/assets/fonts"));
 
     // sweetalert
     gulp.src("vendor/bower_dl/sweetalert/dist/sweetalert.css")
         .pipe(gulp.dest('resources/assets/css'));
 
     gulp.src("vendor/bower_dl/sweetalert/dist/sweetalert.min.js")
-        .pipe(gulp.dest('public/assets/js/'));
+        .pipe(gulp.dest('resources/assets/js/'));
 
     // vue
     gulp.src("vendor/bower_dl/vue/dist/vue.js")
@@ -58,15 +58,15 @@ gulp.task("copyfiles", function() {
     gulp.src("vendor/bower_dl/AdminLTE/dist/css/skins/_all-skins.min.css")
         .pipe(gulp.dest('resources/assets/css/'));
 
-    gulp.src("vendor/bower_dl/AdminLTE/plugins/**")
-        .pipe(gulp.dest('public/assets/js/plugins'));
+    // gulp.src("vendor/bower_dl/AdminLTE/plugins/**")
+    //     .pipe(gulp.dest('public/assets/js/plugins'));
 
     // ionicons
     gulp.src("vendor/bower_dl/Ionicons/less/**")
         .pipe(gulp.dest('resources/assets/less/ionicons'));
 
     gulp.src("vendor/bower_dl/Ionicons/fonts/**")
-        .pipe(gulp.dest('public/assets/fonts'));
+        .pipe(gulp.dest('public/build/assets/fonts'));
 
 });
 
@@ -76,7 +76,7 @@ gulp.task("copyfiles", function() {
 elixir(function(mix) {
 
     // 合并 scripts
-    mix.scripts(['js/jquery.js', 'js/bootstrap.js', 'js/vue.js', 'js/vue-resource.js', 'js/vue-async-data.js', 'js/app.js'],
+    mix.scripts(['js/jquery.js', 'js/bootstrap.js', 'js/vue.js', 'js/vue-resource.js', 'js/vue-async-data.js', 'js/app.js', 'js/sweetalert.min.js'],
         'public/assets/js/admin.js',
         'resources/assets'
     );
@@ -89,4 +89,8 @@ elixir(function(mix) {
         'public/assets/css/admin.css',
         'resources/assets'
     );
+
+    elixir(function(mix) {
+        mix.version(['assets/css/admin.css', 'assets/js/admin.js']);
+    });
 });
