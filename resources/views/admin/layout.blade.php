@@ -9,7 +9,7 @@
 
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
-        <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
+        <link rel="stylesheet" href="{{ elixir('assets/css/admin.css') }}">
 
     </head>
 
@@ -123,9 +123,8 @@
     <!-- ./wrapper -->
 
     <!-- js -->
-    <script src=" {{ asset('assets/js/admin.js') }} "></script>
+    <script src=" {{ elixir('assets/js/admin.js') }} "></script>
 
-    <script src=" {{ asset('assets/js/sweetalert.min.js') }} "></script>
 
     @yield('script')
   </body>

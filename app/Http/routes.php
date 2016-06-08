@@ -11,7 +11,7 @@
 |
 */
 
-Route::group(['namespace' => 'Admin', 'domain' => 'admin.popshop.dev', 'as' => 'admin'], function () {
+Route::group(['namespace' => 'Admin', 'domain' => env('ADMIN_URL', 'admin.popshop.dev'), 'as' => 'admin'], function () {
 
         Route::get('login', 'AuthController@getLogin');
         Route::post('login', 'AuthController@postLogin');
@@ -20,6 +20,7 @@ Route::group(['namespace' => 'Admin', 'domain' => 'admin.popshop.dev', 'as' => '
         Route::post('register', 'AuthController@postRegister');
 
         Route::get('logout', 'AuthController@getLogout');
+
 
         Route::group(['middleware' => 'auth'], function() {
 
