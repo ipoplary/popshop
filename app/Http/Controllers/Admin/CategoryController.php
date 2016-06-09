@@ -24,39 +24,44 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getIndex()
+    public function getIndex($category = 0)
+    {
+        $data['category'] = $category;
+
+        $data['parents'] = $this->_getParentCategories();
+
+        // 获取分页信息
+        if($category > 0)
+            $cate = Category::where('parent', $category)->paginate($this->pageNum);
+        else
+            $cate = Category::where('parent', '!=', 0)->orderBy('parent')->orderBy('sort')->forPage(1, $this->pageNum)->paginate($this->pageNum);
+
+        // 关联父类信息
+        foreach($cate->getCollection() as &$v) {
+            $v = $v->parentCate;
+        }
+
+        $data['cate'] = $cate;
+
+        return view('admin.category.index', $data);
+    }
+
+    private function _getParentCategories()
     {
         // 父类别
         $parents = Category::where('parent', 0)
                     ->get()
                     ->toArray();
 
-        $noParent = array(
-            '0' => array(
+        $noParent = [
+            '0' => [
                 'id' => 0,
-                'name' => '无父类别'
-            )
-        );
+                'name' => '无父类别',
+                'name_all' => '所有'
+            ]
+        ];
 
-        // 获取分页信息
-        $cate = Category::where('parent', 0)->forPage(1,$this->pageNum)->paginate($this->pageNum);
-
-
-        // 类别列表数据
-        $categories = $cate->getCollection()->keyBy('id');
-
-        // 关联父类信息
-        foreach($categories as &$v) {
-            $v = $v->parentCate;
-        }
-
-
-        $data['parents'] = array_merge($noParent, $parents);
-
-        $data['cate'] = $cate;
-
-        return view('admin.category.index', $data);
-        return view('admin.category.index');
+        return array_merge($noParent, $parents);
     }
 
     /**
@@ -133,16 +138,16 @@ class CategoryController extends Controller
         if( ! $category )
             return response()->json($this->_returnData(1, '找不到相关的类别信息'));
 
-        if($request->input('name')) {
-            $category->name   = $name;
+        if( $request->input('name') ) {
+            $category->name   = $request->input('name');
         }
 
-        if($request->input('parent')) {
-            $category->parent = $parent;
+        if( $request->input('parent') ) {
+            $category->parent = $request->input('parent');
         }
 
-        if($request->input('sort')) {
-            $category->sort   = $sort;
+        if( $request->input('sort') ) {
+            $category->sort   = $request->input('sort');
         }
 
         $result = $category->save();

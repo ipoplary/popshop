@@ -12,26 +12,54 @@
                 <div class="panel-heading">
                     类别列表
                 </div>
-                <!-- /.panel-heading -->
+                {{-- /.panel-heading --}}
                 <div class="panel-body">
                     <div id="table">
-                        <div>
-                            <button type="button" class="btn btn-primary" v-on:click="addModal">新增类别</button>
-                        </div><br/>
-                        <table class="table table-striped table-bordered table-hover">
+                        <div class="row">
+
+                            <div class="col-md-1">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                    选择类别
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                @foreach ($parents as $parent)
+                                    <li role="presentation">
+                                        <a role="menuitem" tabindex="-1" href=" {{ url('category/index').'/'.$parent['id'] }} "> {{ isset($parent['name_all'])? $parent['name_all']: $parent['name'] }} </a>
+                                    </li>
+                                @endforeach
+                                </ul>
+                            </div>
+
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-primary" v-on:click="addModal">新增类别</button>
+                            </div>
+
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-success" v-on:click="parentSort">父类别排序</button>
+                            </div>
+                            @if($category > 0)
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-warning" v-on:click="categorySort">类别排序</button>
+                            </div>
+                            @endif
+
+                        </div>
+                        <br/>
+
+                        <table class="table table-striped table-bordered table-hovertable-responsive">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>名称</th>
-                                    <th>父类别</th>
-                                    <th>操作</th>
+                                    <th class="col-md-1">ID</th>
+                                    <th class="col-md-2">名称</th>
+                                    <th class="col-md-2">父类别</th>
+                                    <th class="col-md-2">操作</th>
                                 </tr>
                             </thead>
                             <tbody>
                             @foreach ($cate->items() as $category)
-                                <tr class="odd gradeX" v-bind:class="'success'">
+                                <tr class="odd gradeX">
                                     <td>
-                                        <span class="glyphicon glyphicon-plus" v-on:click="getChildCate({{ $category->id }})"></span>
                                         {{ $category->id }}
                                     </td>
                                     <td> {{ $category->name }} </td>
@@ -46,17 +74,17 @@
                             @endforeach
                             </tbody>
                         </table>
-                        {!! $cate->links() !!}
+                        {!! $cate->render() !!}
 
                     </div>
                 </div>
-                <!-- /.panel-body -->
+                {{-- /.panel-body --}}
             </div>
-            <!-- /.panel -->
+            {{-- /.panel --}}
         </div>
-        <!-- /.col-lg-12 -->
+        {{-- /.col-lg-12 --}}
 
-        <!-- BEGIN 添加、编辑模态框 -->
+        {{-- BEGIN 添加、编辑模态框 --}}
         <div id="modal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
@@ -89,14 +117,13 @@
                 </div>
             </div>
         </div>
-        <!-- END 添加、编辑模态框 -->
+        {{-- END 添加、编辑模态框 --}}
 
     </div>
-    <!-- /.row -->
+    {{-- /.row --}}
 @endsection
 
 @section('script')
-<script>
 <script>
 
     var vm = new Vue({
@@ -132,16 +159,15 @@
 
                 var type, params, url;
                 if(this.editCategoryId > 0) {
-                    // 更新数据
+                    {{-- 更新数据 --}}
                     type = "update";
                     params = {
                         "name": name,
-                        "parent": parent,
-                        "id": this.editCategoryId
+                        "parent": parent
                     };
-                    url = "{{ url('/category/update') }}";
+                    url = "{{ url('/category/update') }}" + "/" + this.editCategoryId;
                 } else {
-                    // 创建数据
+                    {{-- 创建数据 --}}
                     type = "store";
                     params = {
                         "name": name,
@@ -157,14 +183,22 @@
                     },
                     emulateJSON: true
                 }).then( function (reponse) {
-                    // success
+                    {{-- success --}}
                     var returnData = reponse.data;
 
-                    if(returnData.err == 0) {
+                    if(returnData.err == 1) {
 
-                        swal(this.modalTitle, returnData.msg, "success");
-                        $("#modal").modal('hide');
-                        window.location.reload();
+                        swal({
+                            title: this.modalTitle,
+                            text: returnData.msg,
+                            type: "success"
+                        },
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#modal").modal('hide');
+                                window.location.reload();
+                            }
+                        });
 
                     } else {
 
@@ -191,11 +225,8 @@
                 },
                 function(){
 
-                    var url = "{{ url('/category/delete') }}";
-                    var params = {
-
-                        "id": id
-                    };
+                    var url = "{{ url('/category/destroy').'/' }}" + id;
+                    var params = {};
                     vm.$http.post( url, params, {
                         headers: {
                             "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
@@ -203,10 +234,10 @@
                         },
                         emulateJSON: true
                     }).then( function (reponse) {
-                        // success
+                        {{-- success --}}
                         var returnData = reponse.data;
 
-                        if(returnData.err == 0) {
+                        if(returnData.err == 1) {
 
                             swal("删除类别", returnData.msg, "success");
                             window.location.reload();
@@ -222,39 +253,9 @@
                     });
                 });
             },
-            getChildCate: function(id) {
-                var url = "{{ url('/category/child') }}";
-                var params = {
-                    "id": id
-                };
-                vm.$http.post( url, params, {
-                    headers: {
-                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
-                        "X-Requested-With": "XMLHttpRequest"
-                    },
-                    emulateJSON: true
-                }).then( function (reponse) {
-                    // success
-                    var returnData = reponse.data;
-
-                    if(returnData.err == 0) {
-                        this.children[id] = returnData.extra;
-                        console.log(this.children);
-
-                    } else {
-
-                        swal("出错了！", returnData.msg, "error");
-
-                    }
-                }, function (reponse) {
-
-                    swal("出错了！", "数据传输错误", "error");
-                });
-            }
         }
     });
 
-    </script>
 </script>
 
 @endsection

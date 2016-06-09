@@ -13,6 +13,6 @@ class Category extends Model
 
     public function parentCate()
     {
-        return $this->hasOne('App\Models\Category', 'id', 'parent');
+        return $this->belongsTo('App\Models\Category', 'parent', 'id');
     }
 }
