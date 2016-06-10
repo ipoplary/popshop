@@ -127,6 +127,8 @@
     {{-- js --}}
     <script src=" {{ elixir('assets/js/admin.js') }} "></script>
 
+    <script>
+    </script>
 
     @yield('script')
   </body>

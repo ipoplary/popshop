@@ -24,17 +24,19 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getIndex($category = 0)
+    public function getIndex($category = '0')
     {
-        $data['category'] = $category;
+        $data['categoryId'] = $category;
 
         $data['parents'] = $this->_getParentCategories();
 
         // 获取分页信息
-        if($category > 0)
-            $cate = Category::where('parent', $category)->paginate($this->pageNum);
+        if($category === '0')
+            $cate = Category::where('parent', '!=', 0)->orderBy('parent')->orderBy('sort')->paginate($this->pageNum);
+        else if($category === 'parent')
+            $cate = Category::where('parent', 0)->orderBy('sort')->paginate($this->pageNum);
         else
-            $cate = Category::where('parent', '!=', 0)->orderBy('parent')->orderBy('sort')->forPage(1, $this->pageNum)->paginate($this->pageNum);
+            $cate = Category::where('parent', $category)->paginate($this->pageNum);
 
         // 关联父类信息
         foreach($cate->getCollection() as &$v) {
@@ -178,5 +180,10 @@ class CategoryController extends Controller
 
         else
             return response()->json($this->_returnData(-1, '删除失败'));
+    }
+
+    public function postSort(Request $request)
+    {
+
     }
 }

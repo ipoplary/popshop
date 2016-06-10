@@ -36,11 +36,12 @@
                             </div>
 
                             <div class="col-md-1">
-                                <button type="button" class="btn btn-success" v-on:click="parentSort">父类别排序</button>
+                                <a type="button" class="btn btn-warning" href="{{ url('category/index').'/parent' }}">父类别</a>
                             </div>
-                            @if($category > 0)
+
+                            @if($categoryId != '0')
                             <div class="col-md-1">
-                                <button type="button" class="btn btn-warning" v-on:click="categorySort">类别排序</button>
+                                <button type="button" class="btn btn-success" v-on:click="comfirmSort">确定排序</button>
                             </div>
                             @endif
 
@@ -54,9 +55,12 @@
                                     <th class="col-md-2">名称</th>
                                     <th class="col-md-2">父类别</th>
                                     <th class="col-md-2">操作</th>
+                                    @if($categoryId != '0')
+                                    <th class="col-md-1">排序(拖曳进行排序)</th>
+                                    @endif
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody v-sortable="{ handle: '.handle' }">
                             @foreach ($cate->items() as $category)
                                 <tr class="odd gradeX">
                                     <td>
@@ -70,6 +74,13 @@
 
                                         <button type="button" class="btn btn-danger btn-sm glyphicon glyphicon-remove" v-on:click="deleteCate({{ $category->id }})"> 删除</button>
                                     </td>
+
+                                    @if($categoryId != '0')
+                                    <td class="row">
+                                        <button class="btn btn-primary btn-sm col-md-2">{{ $category->sort }}</button>
+                                        <i class="handle glyphicon glyphicon-move col-md-2"></i>
+                                    </td>
+                                    @endif
                                 </tr>
                             @endforeach
                             </tbody>
@@ -253,6 +264,9 @@
                     });
                 });
             },
+            comfirmSort: function () {
+
+            }
         }
     });
 

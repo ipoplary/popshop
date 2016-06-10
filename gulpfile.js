@@ -68,6 +68,14 @@ gulp.task("copyfiles", function() {
     gulp.src("vendor/bower_dl/Ionicons/fonts/**")
         .pipe(gulp.dest('public/build/assets/fonts'));
 
+    // vue-sortable
+    gulp.src("node_modules/sortablejs/Sortable.min.js")
+        .pipe(gulp.dest('resources/assets/js/'));
+
+    gulp.src("node_modules/vue-sortable/vue-sortable.js")
+        .pipe(gulp.dest('resources/assets/js/'));
+
+
 });
 
 /**
@@ -76,7 +84,7 @@ gulp.task("copyfiles", function() {
 elixir(function(mix) {
 
     // 合并 scripts
-    mix.scripts(['js/jquery.js', 'js/bootstrap.js', 'js/vue.js', 'js/vue-resource.js', 'js/vue-async-data.js', 'js/app.js', 'js/sweetalert.min.js'],
+    mix.scripts(['js/jquery.js', 'js/bootstrap.js', 'js/vue.js', 'js/vue-resource.js', 'js/vue-async-data.js', 'js/Sortable.min.js', 'js/vue-sortable.js', 'js/app.js', 'js/sweetalert.min.js'],
         'public/assets/js/admin.js',
         'resources/assets'
     );
