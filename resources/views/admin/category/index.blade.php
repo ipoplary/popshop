@@ -9,10 +9,7 @@
     <div class="row" id="app">
         <div class="col-lg-12">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    类别列表
-                </div>
-                {{-- /.panel-heading --}}
+
                 <div class="panel-body">
                     <div id="table">
                         <div class="row">
@@ -77,8 +74,7 @@
 
                                     @if($categoryId != '0')
                                     <td class="row">
-                                        <button class="btn btn-primary btn-sm col-md-2">{{ $category->sort }}</button>
-                                        <i class="handle glyphicon glyphicon-move col-md-2"></i>
+                                        <button class="btn btn-primary btn-sm col-md-4 glyphicon glyphicon-move handle">  {{ $category->sort }}</button>
                                     </td>
                                     @endif
                                 </tr>
