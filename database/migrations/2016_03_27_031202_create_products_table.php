@@ -20,10 +20,11 @@ class CreateProductsTable extends Migration
             $table->decimal('org_price', 8, 2);
             $table->decimal('dsc_price', 8, 2)->nullable();
             $table->integer('stock');
-            $table->string('introduction');
+            $table->string('introduction')->nullable();
             $table->text('description');
             $table->integer('icon');
             $table->string('banner');
+            $table->integer('snapshot')->default(0);
             $table->nullableTimestamps();
             $table->softDeletes()->nullable();
         });

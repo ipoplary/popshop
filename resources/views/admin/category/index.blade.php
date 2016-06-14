@@ -64,7 +64,7 @@
                                         {{ $category->id }}
                                     </td>
                                     <td> {{ $category->name }} </td>
-                                    <td> {{ $category->parentCate? $category->parentCate->name : '无父类别' }} </td>
+                                    <td> {{ $category->parentName? $category->parentName : '无父类别' }} </td>
                                     <td>
 
                                         <button type="button" class="btn btn-success btn-sm glyphicon glyphicon-edit" v-on:click="editModal({{ $category->id }}, '{{ $category->name }}', {{ $category->parent }})"> 编辑</button>
@@ -141,7 +141,6 @@
             "editCategoryId": "",
             "inputName": "",
             "inputParent": "",
-            "children": []
         },
         methods: {
             httpPost: function (url, params) {
@@ -210,7 +209,7 @@
                         "name": name,
                         "parent": parent
                     };
-                    url = "{{ url('/category/update') }}" + "/" + this.editCategoryId;
+                    url = "{{ url('/category/update').'/' }}" + this.editCategoryId;
                 } else {
                     {{-- 创建数据 --}}
                     type = "store";
@@ -221,7 +220,7 @@
                     url = "{{ url('/category/store') }}";
                 }
                 this.httpPost(url, params);
-                
+
 
             },
             deleteCate: function (id) {

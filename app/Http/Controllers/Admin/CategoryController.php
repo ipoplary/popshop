@@ -40,7 +40,7 @@ class CategoryController extends Controller
 
         // 关联父类信息
         foreach($cate->getCollection() as &$v) {
-            $v = $v->parentCate;
+            $v->parentName = $v->parentCate->name;
         }
 
         $data['cate'] = $cate;
