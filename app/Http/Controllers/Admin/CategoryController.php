@@ -24,19 +24,19 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getIndex($category = '0')
+    public function getIndex($category = '-1')
     {
         $data['categoryId'] = $category;
 
         $data['parents'] = $this->_getParentCategories();
 
         // 获取分页信息
-        if($category === '0')
+        if($category === '-1'){
             $cate = Category::where('parent', '!=', 0)->orderBy('parent')->orderBy('sort')->paginate($this->pageNum);
-        else if($category === 'parent')
-            $cate = Category::where('parent', 0)->orderBy('sort')->paginate($this->pageNum);
-        else
-            $cate = Category::where('parent', $category)->paginate($this->pageNum);
+        } else {
+            $this->pageNum = 0;
+            $cate = Category::where('parent', $category)->orderBy('sort')->paginate($this->pageNum);
+        }
 
         // 关联父类信息
         foreach($cate->getCollection() as &$v) {
@@ -57,7 +57,7 @@ class CategoryController extends Controller
 
         $noParent = [
             '0' => [
-                'id' => 0,
+                'id' => '-1',
                 'name' => '无父类别',
                 'name_all' => '所有'
             ]
@@ -84,23 +84,19 @@ class CategoryController extends Controller
      */
     public function postStore(Request $request)
     {
-        $name   = $request->input('name');
-        $parent = $request->input('parent');
-        $sort   = $request->input('sort');
-
         $category = new Category;
 
-        $category->name   = $name;
-        $category->parent = $parent;
-        $category->sort   = $sort;
+        $category->name   = $request->input('name');
+        $category->parent = $request->input('parent');
+        $category->sort   = (int)Category::where('parent', $category->parent)->max('sort') + 1;
 
         $result = $category->save();
 
         if($result)
-            return response()->json($this->_returnData(1, '添加成功'));
+            return response()->json($this->returnData('添加成功', 1));
 
         else
-            return response()->json($this->_returnData(-1, '添加失败'));
+            return response()->json($this->returnData('添加失败'));
     }
 
     /**
@@ -137,8 +133,9 @@ class CategoryController extends Controller
         $id = (int)$id;
 
         $category = Category::find($id);
+
         if( ! $category )
-            return response()->json($this->_returnData(1, '找不到相关的类别信息'));
+            return response()->json($this->returnData('找不到相关的类别信息'));
 
         if( $request->input('name') ) {
             $category->name   = $request->input('name');
@@ -148,17 +145,13 @@ class CategoryController extends Controller
             $category->parent = $request->input('parent');
         }
 
-        if( $request->input('sort') ) {
-            $category->sort   = $request->input('sort');
-        }
-
         $result = $category->save();
 
         if($result)
-            return response()->json($this->_returnData(1, '更新成功'));
+            return response()->json($this->returnData('更新成功', 1));
 
         else
-            return response()->json($this->_returnData(-1, '更新失败'));
+            return response()->json($this->returnData('更新失败'));
 
     }
 
@@ -176,14 +169,23 @@ class CategoryController extends Controller
         $result = $category->delete();
 
         if($result)
-            return response()->json($this->_returnData(1, '删除成功'));
+            return response()->json($this->returnData('删除成功', 1));
 
         else
-            return response()->json($this->_returnData(-1, '删除失败'));
+            return response()->json($this->returnData('删除失败'));
     }
 
     public function postSort(Request $request)
     {
+        $sortArr = $request->input('sort');
+        $i = 1;
+        foreach($sortArr as $v) {
+            $category[$i] = Category::find($v);
+            $category[$i]->sort = $i;
+            $category[$i]->save();
+            $i++;
+        }
 
+        return response()->json($this->returnData('排序成功！', 1));
     }
 }

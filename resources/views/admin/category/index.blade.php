@@ -33,12 +33,12 @@
                             </div>
 
                             <div class="col-md-1">
-                                <a type="button" class="btn btn-warning" href="{{ url('category/index').'/parent' }}">父类别</a>
+                                <a type="button" class="btn btn-success" href="{{ url('category/index/0') }}">父类别</a>
                             </div>
 
-                            @if($categoryId != '0')
+                            @if($categoryId != '-1')
                             <div class="col-md-1">
-                                <button type="button" class="btn btn-success" v-on:click="comfirmSort">确定排序</button>
+                                <button type="button" class="btn btn-warning" v-on:click="comfirmSort">确定排序</button>
                             </div>
                             @endif
 
@@ -52,14 +52,14 @@
                                     <th class="col-md-2">名称</th>
                                     <th class="col-md-2">父类别</th>
                                     <th class="col-md-2">操作</th>
-                                    @if($categoryId != '0')
+                                    @if($categoryId != '-1')
                                     <th class="col-md-1">排序(拖曳进行排序)</th>
                                     @endif
                                 </tr>
                             </thead>
-                            <tbody v-sortable="{ handle: '.handle' }">
+                            <tbody v-sortable="{ handle: '.handle' }" id="sort">
                             @foreach ($cate->items() as $category)
-                                <tr class="odd gradeX">
+                                <tr class="odd gradeX sort-id" data-id="{{ $category->id }}">
                                     <td>
                                         {{ $category->id }}
                                     </td>
@@ -72,9 +72,9 @@
                                         <button type="button" class="btn btn-danger btn-sm glyphicon glyphicon-remove" v-on:click="deleteCate({{ $category->id }})"> 删除</button>
                                     </td>
 
-                                    @if($categoryId != '0')
+                                    @if($categoryId != '-1')
                                     <td class="row">
-                                        <button class="btn btn-primary btn-sm col-md-4 glyphicon glyphicon-move handle">  {{ $category->sort }}</button>
+                                        <button class="btn btn-warning btn-sm col-md-4 glyphicon glyphicon-move handle">  {{ $category->sort }}</button>
                                     </td>
                                     @endif
                                 </tr>
@@ -136,6 +136,7 @@
     var vm = new Vue({
         el: "#app",
         data: {
+            "categoryId": "{{ $categoryId }}",
             "modalTitle": "",
             "editCategoryId": "",
             "inputName": "",
@@ -143,6 +144,43 @@
             "children": []
         },
         methods: {
+            httpPost: function (url, params) {
+                this.$http.post( url, params, {
+                    headers: {
+                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    emulateJSON: true
+                }).then( function (reponse) {
+
+                    var returnData = reponse.data;
+
+                    if(returnData.err == 1) {
+
+                        swal({
+                            title: '操作结果',
+                            text: returnData.msg,
+                            type: "success"
+                        },
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#modal").modal('hide');
+                                window.location.reload();
+                            }
+                        });
+
+                    } else {
+
+                        swal("出错了！", returnData.msg, "error");
+
+                    }
+                }, function (reponse) {
+
+                    swal("出错了！", "数据传输错误", "error");
+                });
+            },
+
+
             addModal: function () {
                 this.editCategoryId = "";
                 this.inputName = '';
@@ -182,40 +220,8 @@
                     };
                     url = "{{ url('/category/store') }}";
                 }
-
-                this.$http.post( url, params, {
-                    headers: {
-                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
-                        "X-Requested-With": "XMLHttpRequest"
-                    },
-                    emulateJSON: true
-                }).then( function (reponse) {
-                    {{-- success --}}
-                    var returnData = reponse.data;
-
-                    if(returnData.err == 1) {
-
-                        swal({
-                            title: this.modalTitle,
-                            text: returnData.msg,
-                            type: "success"
-                        },
-                        function (isConfirm) {
-                            if (isConfirm) {
-                                $("#modal").modal('hide');
-                                window.location.reload();
-                            }
-                        });
-
-                    } else {
-
-                        swal("出错了！", returnData.msg, "error");
-
-                    }
-                }, function (reponse) {
-
-                    swal("出错了！", "数据传输错误", "error");
-                });
+                this.httpPost(url, params);
+                
 
             },
             deleteCate: function (id) {
@@ -234,34 +240,18 @@
 
                     var url = "{{ url('/category/destroy').'/' }}" + id;
                     var params = {};
-                    vm.$http.post( url, params, {
-                        headers: {
-                            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
-                            "X-Requested-With": "XMLHttpRequest"
-                        },
-                        emulateJSON: true
-                    }).then( function (reponse) {
-                        {{-- success --}}
-                        var returnData = reponse.data;
-
-                        if(returnData.err == 1) {
-
-                            swal("删除类别", returnData.msg, "success");
-                            window.location.reload();
-
-                        } else {
-
-                            swal("出错了！", returnData.msg, "error");
-
-                        }
-                    }, function (reponse) {
-
-                        swal("出错了！", "数据传输错误", "error");
-                    });
+                    vm.httpPost(url, params);
                 });
             },
             comfirmSort: function () {
+                var url = "{{ url('category/sort') }}";
+                var arr = [];
 
+                $("#sort").find(".sort-id").each(function () {
+                    arr.push($(this).attr("data-id"));
+                });
+
+                this.httpPost(url, {sort: arr});
             }
         }
     });

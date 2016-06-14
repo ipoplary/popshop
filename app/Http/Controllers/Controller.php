@@ -18,7 +18,7 @@ abstract class Controller extends BaseController
      * @param  mixed   $data 数据
      * @return array         返回json数据的数组形式
      */
-    protected function _returnData($err = 0, $msg = '', $extra = null)
+    protected function returnData($msg = '', $err = 0, $extra = null)
     {
         $returnArr = array(
             'err'   => $err,
