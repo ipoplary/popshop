@@ -1,8 +1,8 @@
 @extends('admin.layout')
 
-@section('title', 'Category')
+@section('title', 'Product')
 
-@section('app', 'category')
+@section('app', 'product')
 
 @section('content')
 
@@ -20,9 +20,6 @@
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href=" {{ url('category/index').'/-1' }} "> 所有类别 </a>
-                                    </li>
                                 @foreach ($parents as $parent)
                                     <li role="presentation">
                                         <a role="menuitem" tabindex="-1" href=" {{ url('category/index').'/'.$parent['id'] }} "> {{ $parent['name_all'] or $parent['name'] }} </a>
@@ -111,7 +108,7 @@
                         <div class="form-group">
                             <label for="message-text" class="control-label">父类别:</label>
                             <select class="form-control" v-model="inputParent">
-                                <option value="0"> 无父类别 </option>
+
                                 @foreach ($parents as $parent)
 
                                    <option v-if="{{ $parent['id'] }} != editCategoryId || editCategoryId == 0" value="{{ $parent['id'] }}"> {{ $parent['name'] }} </option>

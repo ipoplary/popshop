@@ -24,46 +24,31 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getIndex($category = '-1')
+    public function getIndex($parent = '-1')
     {
-        $data['categoryId'] = $category;
+        $data['categoryId'] = $parent;
 
-        $data['parents'] = $this->_getParentCategories();
+        $data['parents'] = Category::where('parent', 0)->get();
 
+        $parent = (int)$parent;
         // 获取分页信息
-        if($category === '-1'){
+        if($parent < 0){
             $cate = Category::where('parent', '!=', 0)->orderBy('parent')->orderBy('sort')->paginate($this->pageNum);
         } else {
             $this->pageNum = 0;
-            $cate = Category::where('parent', $category)->orderBy('sort')->paginate($this->pageNum);
+            $cate = Category::where('parent', $parent)->orderBy('sort')->paginate($this->pageNum);
         }
 
         // 关联父类信息
-        foreach($cate->getCollection() as &$v) {
-            $v->parentName = $v->parentCate->name;
+        if($parent > 0) {
+            foreach($cate->getCollection() as &$v) {
+                $v->parentName = $v->parent->name;
+            }
         }
 
         $data['cate'] = $cate;
 
         return view('admin.category.index', $data);
-    }
-
-    private function _getParentCategories()
-    {
-        // 父类别
-        $parents = Category::where('parent', 0)
-                    ->get()
-                    ->toArray();
-
-        $noParent = [
-            '0' => [
-                'id' => '-1',
-                'name' => '无父类别',
-                'name_all' => '所有'
-            ]
-        ];
-
-        return array_merge($noParent, $parents);
     }
 
     /**
