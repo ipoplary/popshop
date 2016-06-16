@@ -11,7 +11,7 @@ class Category extends Model
 
     protected $dates = ['deleted_at'];
 
-    public function parent()
+    public function parentCategory()
     {
         return $this->belongsTo('App\Models\Category', 'parent', 'id');
     }
