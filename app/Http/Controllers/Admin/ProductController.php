@@ -60,6 +60,7 @@ class ProductController extends Controller
                 unset($v);
             }
         } else {
+            // 无类别参数，获取所有商品
             $data['products'] = $data['products']->paginate($this->pageNum);
 
             foreach ($data['products']->items() as &$v) {
