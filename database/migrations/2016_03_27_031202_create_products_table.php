@@ -7,8 +7,6 @@ class CreateProductsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -16,13 +14,13 @@ class CreateProductsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('sku');
-            $table->integer('category');
+            $table->integer('category_id');
             $table->decimal('org_price', 8, 2);
             $table->decimal('dsc_price', 8, 2)->nullable();
             $table->integer('stock');
             $table->string('introduction')->nullable();
             $table->text('description');
-            $table->integer('icon');
+            $table->integer('icon_id');
             $table->string('banner');
             $table->integer('snapshot')->default(0);
             $table->nullableTimestamps();
@@ -32,8 +30,6 @@ class CreateProductsTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

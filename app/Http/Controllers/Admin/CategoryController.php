@@ -3,15 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
 use App\Models\Category;
 
 class CategoryController extends Controller
 {
-
     private $pageNum;
 
     public function __construct()
@@ -24,24 +20,24 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getIndex($parent = '-1')
+    public function getIndex($parentId = '-1')
     {
-        $data['categoryId'] = $parent;
+        $data['parentId'] = $parentId;
 
-        $data['parents'] = Category::where('parent', 0)->get();
+        $data['parents'] = Category::where('parent_id', 0)->orderBy('sort')->get();
 
-        $parent = (int)$parent;
+        $parentId = (int) $parentId;
         // 获取分页信息
-        if($parent < 0){
-            $cate = Category::where('parent', '!=', 0)->orderBy('parent')->orderBy('sort')->paginate($this->pageNum);
+        if ($parentId < 0) {
+            $cate = Category::where('parent_id', '!=', 0)->orderBy('parent_id')->orderBy('sort')->paginate($this->pageNum);
         } else {
             $this->pageNum = 0;
-            $cate = Category::where('parent', $parent)->orderBy('sort')->paginate($this->pageNum);
+            $cate = Category::where('parent_id', $parentId)->orderBy('sort')->paginate($this->pageNum);
         }
 
         // 关联父类信息
-        if($parent > 0) {
-            foreach($cate->getCollection() as &$v) {
+        if ($parentId > 0) {
+            foreach ($cate->getCollection() as &$v) {
                 $v->parentName = $v->parent->name;
             }
         }
@@ -64,30 +60,33 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function postStore(Request $request)
     {
-        $category = new Category;
+        $category = new Category();
 
-        $category->name   = $request->input('name');
-        $category->parent = $request->input('parent');
-        $category->sort   = (int)Category::where('parent', $category->parent)->max('sort') + 1;
+        $category->name = $request->input('name');
+        $category->parent_id = $request->input('parent');
+
+        $category->sort = (int) Category::where('parent_id', $category->parent_id)->max('sort') + 1;
 
         $result = $category->save();
 
-        if($result)
+        if ($result) {
             return response()->json($this->returnData('添加成功', 1));
-
-        else
+        } else {
             return response()->json($this->returnData('添加失败'));
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -98,7 +97,8 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -109,66 +109,68 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function postUpdate(Request $request, $id)
     {
-        $id = (int)$id;
+        $id = (int) $id;
 
         $category = Category::find($id);
 
-        if( ! $category )
+        if (!$category) {
             return response()->json($this->returnData('找不到相关的类别信息'));
-
-        if( $request->input('name') ) {
-            $category->name   = $request->input('name');
         }
 
-        if( $request->input('parent') ) {
-            $category->parent = $request->input('parent');
+        if ($request->input('name')) {
+            $category->name = $request->input('name');
+        }
+
+        if ($request->input('parent')) {
+            $category->parent_id = $request->input('parent');
         }
 
         $result = $category->save();
 
-        if($result)
+        if ($result) {
             return response()->json($this->returnData('更新成功', 1));
-
-        else
+        } else {
             return response()->json($this->returnData('更新失败'));
-
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function postDestroy($id)
     {
-        $id = (int)$id;
+        $id = (int) $id;
 
         $category = Category::find($id);
         $result = $category->delete();
 
-        if($result)
+        if ($result) {
             return response()->json($this->returnData('删除成功', 1));
-
-        else
+        } else {
             return response()->json($this->returnData('删除失败'));
+        }
     }
 
     public function postSort(Request $request)
     {
         $sortArr = $request->input('sort');
         $i = 1;
-        foreach($sortArr as $v) {
+        foreach ($sortArr as $v) {
             $category[$i] = Category::find($v);
             $category[$i]->sort = $i;
             $category[$i]->save();
-            $i++;
+            ++$i;
         }
 
         return response()->json($this->returnData('排序成功！', 1));

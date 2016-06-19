@@ -39,7 +39,7 @@
                                 <a type="button" class="btn btn-success" href="{{ url('category/index/0') }}">父类别</a>
                             </div>
 
-                            @if($categoryId != '-1')
+                            @if($parentId != '-1')
                             <div class="col-md-1">
                                 <button type="button" class="btn btn-warning" v-on:click="comfirmSort">确定排序</button>
                             </div>
@@ -55,7 +55,7 @@
                                     <th class="col-md-2">名称</th>
                                     <th class="col-md-2">父类别</th>
                                     <th class="col-md-2">操作</th>
-                                    @if($categoryId != '-1')
+                                    @if($parentId != '-1')
                                     <th class="col-md-1">排序(拖曳进行排序)</th>
                                     @endif
                                 </tr>
@@ -70,12 +70,12 @@
                                     <td> {{ $category->parentName or '无父类别' }} </td>
                                     <td>
 
-                                        <button type="button" class="btn btn-success btn-sm glyphicon glyphicon-edit" v-on:click="editModal({{ $category->id }}, '{{ $category->name }}', {{ $category->parent }})"> 编辑</button>
+                                        <button type="button" class="btn btn-success btn-sm glyphicon glyphicon-edit" v-on:click="editModal({{ $category->id }}, '{{ $category->name }}', {{ $category->parent_id }})"> 编辑</button>
 
                                         <button type="button" class="btn btn-danger btn-sm glyphicon glyphicon-remove" v-on:click="deleteCate({{ $category->id }})"> 删除</button>
                                     </td>
 
-                                    @if($categoryId != '-1')
+                                    @if($parentId != '-1')
                                     <td class="row">
                                         <button class="btn btn-warning btn-sm col-md-4 glyphicon glyphicon-move handle">  {{ $category->sort }}</button>
                                     </td>
@@ -139,7 +139,7 @@
     var vm = new Vue({
         el: "#app",
         data: {
-            "categoryId": "{{ $categoryId }}",
+            "categoryId": "{{ $parentId }}",
             "modalTitle": "",
             "editCategoryId": "",
             "inputName": "",
