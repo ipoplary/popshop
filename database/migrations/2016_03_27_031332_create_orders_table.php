@@ -12,7 +12,7 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('orderid');
+            $table->string('orderid', 20);
             $table->integer('status');
             $table->decimal('sum_price', 8, 2);
             $table->integer('user');

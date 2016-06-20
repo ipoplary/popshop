@@ -12,7 +12,7 @@ class CreateSkusTable extends Migration
     {
         Schema::create('skus', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('prefix')->unique();
+            $table->string('prefix', 10)->unique();
             $table->integer('count');
             $table->softDeletes();
             $table->timestamps();

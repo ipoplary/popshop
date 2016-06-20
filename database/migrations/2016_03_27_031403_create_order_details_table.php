@@ -12,7 +12,7 @@ class CreateOrderDetailsTable extends Migration
     {
         Schema::create('order_details', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('orderid');
+            $table->string('orderid', 20);
             $table->integer('product_id');
             $table->integer('count');
             $table->decimal('crt_price', 8, 2);
