@@ -22,7 +22,7 @@
                                 <ul class="dropdown-menu" role="menu">
                                 @foreach ($parents as $parent)
                                     <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href=" {{ url('category/index').'/'.$parent['id'] }} "> {{ $parent['name_all'] or $parent['name'] }} </a>
+                                        <a role="menuitem" tabindex="-1" > {{ $parent['name_all'] or $parent['name'] }} </a>
                                     </li>
                                 @endforeach
                                 </ul>
@@ -117,7 +117,9 @@
                     var returnData = reponse.data;
                     if(returnData.err == 1) {
 
-                        if(type == 'delete') {
+                        if(type == 'getCategoryList') {
+                            return returnData.extra;
+                        } else if(type == 'delete' ) {
                             swal({
                                 title: '操作结果',
                                 text: returnData.msg,
@@ -129,8 +131,6 @@
                                     window.location.reload();
                                 }
                             });
-                        } else if(type == 'getCategoryList') {
-
                         }
 
                     } else {
@@ -162,13 +162,15 @@
                     vm.httpPost(url, params);
                 });
             },
-            getCategory: function($id) {
-                var url = "{{ url('category/getList') }}";
-                var params = {
-                    'id': $id
-                };
-                var type = "getCategoryList";
-                this.httpPost(url, params, type);
+            getCategory: function(id) {
+                if(this.categoryList[id] === undefind) {
+                    var url = "{{ url('category/getList') }}";
+                    var params = {
+                        'id': $id
+                    };
+                    var type = "getCategoryList";
+                    this.httpPost(url, params, type);
+                }
             },
             comfirmSort: function() {
                 var url = "{{ url('product/sort') }}";
@@ -177,8 +179,9 @@
                 $("#sort").find(".sort-id").each(function() {
                     arr.push($(this).attr("data-id"));
                 });
+                var params = {sort: arr};
 
-                this.httpPost(url, {sort: arr});
+                this.httpPost(url, params, "sort");
             }
         }
     });
