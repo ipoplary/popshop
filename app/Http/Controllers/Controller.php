@@ -13,10 +13,10 @@ abstract class Controller extends BaseController
 
     /**
      * 组装json数据的数组
-     * @param  integer $err  错误码
-     * @param  string  $msg  信息
-     * @param  mixed   $data 数据
-     * @return array         返回json数据的数组形式
+     * @param  integer $err   错误码
+     * @param  string  $msg   信息
+     * @param  mixed   $extra 数据
+     * @return array          返回json数据的数组形式
      */
     protected function returnData($msg = '', $err = 0, $extra = null)
     {

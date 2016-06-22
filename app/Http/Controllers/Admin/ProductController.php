@@ -67,7 +67,7 @@ class ProductController extends Controller
                 $v->categoryName = $v->Category->name;
             }
         }
-
+        // dd($data);
         return view('admin.product.index', $data);
     }
 

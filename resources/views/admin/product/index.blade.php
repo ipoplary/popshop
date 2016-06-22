@@ -49,8 +49,9 @@
                             <thead>
                                 <tr>
                                     <th class="col-md-1">ID</th>
-                                    <th class="col-md-2">名称</th>
-                                    <th class="col-md-2">父类别</th>
+                                    <th class="col-md-2">SKU</th>
+                                    <th class="col-md-2">商品名</th>
+                                    <th class="col-md-2">所属类别</th>
                                     <th class="col-md-2">操作</th>
                                     @if($sort == 1)
                                     <th class="col-md-1">排序(拖曳进行排序)</th>
@@ -59,16 +60,16 @@
                             </thead>
                             <tbody v-sortable="{ handle: '.handle' }" id="sort">
                             @foreach ($products->items() as $product)
-                                <tr class="odd gradeX sort-id" data-id="{{ $category->id }}">
+                                <tr class="odd gradeX sort-id" data-id="{{ $product->id }}">
                                     <td> {{ $product->id }} </td>
                                     <td> {{ $product->sku }} </td>
                                     <td> {{ $product->name }} </td>
-                                    <td> {{ $category->parentName or '无父类别' }} </td>
+                                    <td> {{ $product->categoryName or '无父类别' }} </td>
                                     <td>
 
-                                        <button type="button" class="btn btn-success btn-sm glyphicon glyphicon-edit" v-on:click="editModal({{ $category->id }}, '{{ $category->name }}', {{ $category->parent }})"> 编辑</button>
+                                        <button type="button" class="btn btn-success btn-sm glyphicon glyphicon-edit" v-on:click="editModal({{ $product->id }}, '{{ $product->sku }}', {{ $product->name }})"> 编辑</button>
 
-                                        <button type="button" class="btn btn-danger btn-sm glyphicon glyphicon-remove" v-on:click="deleteCate({{ $category->id }})"> 删除</button>
+                                        <button type="button" class="btn btn-danger btn-sm glyphicon glyphicon-remove" v-on:click="deleteCate({{ $product->id }})"> 删除</button>
                                     </td>
 
                                     @if($sort == 1)
@@ -90,41 +91,6 @@
         </div>
         {{-- /.col-lg-12 --}}
 
-        {{-- BEGIN 添加、编辑模态框 --}}
-        <div id="modal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-            <div class="modal-dialog modal-sm">
-                <div class="modal-content">
-                    <div class="modal-header">
-
-                        <h4 class="modal-title" id="modal-title"> @{{ modalTitle }} </h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="recipient-name" class="control-label">类别名称:</label>
-                            <input type="hidden" value="@{{ editCategoryId }}">
-                            <input type="text" class="form-control" id="category-name" placeholder="请填写类别" v-model="inputName">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="control-label">父类别:</label>
-                            <select class="form-control" v-model="inputParent">
-
-                                @foreach ($parents as $parent)
-
-                                   <option v-if="{{ $parent['id'] }} != editCategoryId || editCategoryId == 0" value="{{ $parent['id'] }}"> {{ $parent['name'] }} </option>
-
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-primary" v-on:click="confirm">确定</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {{-- END 添加、编辑模态框 --}}
-
     </div>
     {{-- /.row --}}
 @endsection
@@ -136,93 +102,48 @@
         el: "#app",
         data: {
             "categoryId": "{{ $categoryId }}",
-            "modalTitle": "",
-            "editCategoryId": "",
-            "inputName": "",
-            "inputParent": "",
+            "categoryList": [],
         },
         methods: {
-            httpPost: function (url, params) {
+            httpPost: function(url, params, type) {
                 this.$http.post( url, params, {
                     headers: {
                         "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
                         "X-Requested-With": "XMLHttpRequest"
                     },
                     emulateJSON: true
-                }).then( function (reponse) {
+                }).then( function(reponse) {
 
                     var returnData = reponse.data;
-
                     if(returnData.err == 1) {
 
-                        swal({
-                            title: '操作结果',
-                            text: returnData.msg,
-                            type: "success"
-                        },
-                        function (isConfirm) {
-                            if (isConfirm) {
-                                $("#modal").modal('hide');
-                                window.location.reload();
-                            }
-                        });
+                        if(type == 'delete') {
+                            swal({
+                                title: '操作结果',
+                                text: returnData.msg,
+                                type: "success"
+                            },
+                            function(isConfirm) {
+                                if (isConfirm) {
+                                    $("#modal").modal('hide');
+                                    window.location.reload();
+                                }
+                            });
+                        } else if(type == 'getCategoryList') {
+
+                        }
 
                     } else {
 
                         swal("出错了！", returnData.msg, "error");
 
                     }
-                }, function (reponse) {
+                }, function(reponse) {
 
                     swal("出错了！", "数据传输错误", "error");
                 });
             },
-
-
-            addModal: function () {
-                this.editCategoryId = "";
-                this.inputName = '';
-                this.inputParent = 0;
-                this.modalTitle = "添加类别";
-                $("#modal").modal();
-            },
-            editModal: function (id, name, parent) {
-
-                this.editCategoryId = id;
-
-                this.inputName = name;
-                this.inputParent = parent;
-
-                this.modalTitle = "修改类别";
-                $("#modal").modal();
-            },
-            confirm: function () {
-                var name = this.inputName;
-                var parent = this.inputParent;
-
-                var type, params, url;
-                if(this.editCategoryId > 0) {
-                    {{-- 更新数据 --}}
-                    type = "update";
-                    params = {
-                        "name": name,
-                        "parent": parent
-                    };
-                    url = "{{ url('/category/update').'/' }}" + this.editCategoryId;
-                } else {
-                    {{-- 创建数据 --}}
-                    type = "store";
-                    params = {
-                        "name": name,
-                        "parent": parent
-                    };
-                    url = "{{ url('/category/store') }}";
-                }
-                this.httpPost(url, params);
-
-
-            },
-            deleteCate: function (id) {
+            deleteCate: function(id) {
 
                 swal({
                     title: "删除类别",
@@ -236,16 +157,24 @@
                 },
                 function(){
 
-                    var url = "{{ url('/category/destroy').'/' }}" + id;
+                    var url = "{{ url('product/destroy').'/' }}" + id;
                     var params = {};
                     vm.httpPost(url, params);
                 });
             },
-            comfirmSort: function () {
-                var url = "{{ url('category/sort') }}";
+            getCategory: function($id) {
+                var url = "{{ url('category/getList') }}";
+                var params = {
+                    'id': $id
+                };
+                var type = "getCategoryList";
+                this.httpPost(url, params, type);
+            },
+            comfirmSort: function() {
+                var url = "{{ url('product/sort') }}";
                 var arr = [];
 
-                $("#sort").find(".sort-id").each(function () {
+                $("#sort").find(".sort-id").each(function() {
                     arr.push($(this).attr("data-id"));
                 });
 
