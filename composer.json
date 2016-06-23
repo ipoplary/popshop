@@ -10,7 +10,9 @@
         "doctrine/dbal": "^2.5",
         "kbwebs/multiauth": "^1.0",
         "laravelcollective/html": "5.1.*",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "intervention/image": "^2.3",
+        "barryvdh/laravel-debugbar": "^2.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
