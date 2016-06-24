@@ -14,26 +14,28 @@
                     <div id="table">
                         <div class="row">
 
-                            <div class="col-md-1">
-                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                    选择类别
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                @foreach ($parents as $parent)
-                                    <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" > {{ $parent['name_all'] or $parent['name'] }} </a>
-                                    </li>
-                                @endforeach
-                                </ul>
+                            <div class="col-md-2">
+                                <select class="form-control" v-model="parentId">
+                                    <option value="0" selected="selected">所有父类别</option>
+                                    @foreach($parents as $parent)
+                                    <option value="{{ $parent->id }}" v-on:select="getChidren('{{ $parent->id }}')">{{ $parent->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <select class="form-control">
+                                    <option value="0">所有子类别</option>
+
+                                </select>
                             </div>
 
                             <div class="col-md-1">
-                                <button type="button" class="btn btn-primary" v-on:click="addModal">新增类别</button>
+                                <button class="btn btn-success" v-on:click="filter">筛选</button>
                             </div>
 
                             <div class="col-md-1">
-                                <a type="button" class="btn btn-success" href="{{ url('category/index/0') }}">父类别</a>
+                                <a class="btn btn-primary" href="{{ url('product/create') }}">新增类别</a>
                             </div>
 
                             @if($sort == 1)
@@ -101,8 +103,18 @@
     var vm = new Vue({
         el: "#app",
         data: {
-            "categoryId": "{{ $categoryId }}",
-            "categoryList": [],
+            parentId: 0,
+            categoryId: "{{ $categoryId }}",
+            chidrenList: [],
+        },
+        ready: function() {
+
+            this.chidrenList['0'] = [];
+        },
+        watch: {
+            parentId: function(parentId) {
+                vm.getChidren(parentId);
+            }
         },
         methods: {
             httpPost: function(url, params, type) {
@@ -162,15 +174,21 @@
                     vm.httpPost(url, params);
                 });
             },
-            getCategory: function(id) {
-                if(this.categoryList[id] === undefind) {
-                    var url = "{{ url('category/getList') }}";
+            getChidren: function(id) {
+                {{-- 若不存在父类的子类，获取其的子类列表，并存到数组中 --}}
+                alert(id);
+                console.log(this.chidrenList[id]);
+                if(typeof(this.chidrenList[id]) === 'undefind') {
+                    var url = "{{ url('category/children') }}";
                     var params = {
                         'id': $id
                     };
                     var type = "getCategoryList";
                     this.httpPost(url, params, type);
                 }
+            },
+            filter: function() {
+                alert(1);
             },
             comfirmSort: function() {
                 var url = "{{ url('product/sort') }}";
