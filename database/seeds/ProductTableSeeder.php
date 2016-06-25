@@ -21,6 +21,7 @@ class ProductTableSeeder extends Seeder
                 'description' => '<p>白色衬衫</p><p>纯白色</p>',
                 'icon_id' => 1,
                 'banner' => '2,3',
+                'sort' => 1,
                 'snapshot' => 0,
             ],
             [
@@ -34,6 +35,7 @@ class ProductTableSeeder extends Seeder
                 'description' => '<p>黑色长裤</p><p>修身</p>',
                 'icon_id' => 4,
                 'banner' => '5,6,7',
+                'sort' => 1,
                 'snapshot' => 0,
             ],
             [
@@ -47,6 +49,21 @@ class ProductTableSeeder extends Seeder
                 'description' => '<p>米色长裤</p><p>普通长裤</p>',
                 'icon_id' => 8,
                 'banner' => '9,10',
+                'sort' => 2,
+                'snapshot' => 0,
+            ],
+            [
+                'name' => '进口牛排',
+                'sku' => 'S00004',
+                'category_id' => 9,
+                'org_price' => 109.90,
+                'dsc_price' => 99.90,
+                'stock' => 150,
+                'introduction' => '进口牛排',
+                'description' => '<p>进口牛排</p><p>进口牛排</p>',
+                'icon_id' => 11,
+                'banner' => '12,13',
+                'sort' => 1,
                 'snapshot' => 0,
             ],
         ]);

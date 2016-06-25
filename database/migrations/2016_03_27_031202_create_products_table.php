@@ -22,6 +22,7 @@ class CreateProductsTable extends Migration
             $table->text('description');
             $table->integer('icon_id');
             $table->string('banner', 191);
+            $table->integer('sort')->nullable();
             $table->integer('snapshot')->default(0);
             $table->nullableTimestamps();
             $table->softDeletes()->nullable();

@@ -176,10 +176,10 @@ class CategoryController extends Controller
         return response()->json($this->returnData('排序成功！', 1));
     }
 
-    public function postChidren(Request $request)
+    public function postChildren(Request $request)
     {
         $categoryId = $request->input('id');
-        $chidren = Category::where('parent_id', $categoryId)->get()->toArray();
-        return $response()->json($this->returnData($children, 1));
+        $children = Category::where('parent_id', $categoryId)->get()->toArray();
+        return response()->json($this->returnData('获取成功！', 1, $children));
     }
 }

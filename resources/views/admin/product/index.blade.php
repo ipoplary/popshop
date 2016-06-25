@@ -14,19 +14,19 @@
                     <div id="table">
                         <div class="row">
 
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <select class="form-control" v-model="parentId">
-                                    <option value="0" selected="selected">所有父类别</option>
+                                    <option value="0">所有父类别</option>
                                     @foreach($parents as $parent)
-                                    <option value="{{ $parent->id }}" v-on:select="getChidren('{{ $parent->id }}')">{{ $parent->name }}</option>
+                                    <option value="{{ $parent->id }}" v-on:select="getChildren('{{ $parent->id }}')">{{ $parent->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            <div class="col-md-2">
-                                <select class="form-control">
+                            <div class="col-md-1">
+                                <select class="form-control" v-model="childId">
                                     <option value="0">所有子类别</option>
-
+                                    <option v-for="child in showChildren" value="@{{ child['id'] }}">@{{ child['name'] }}</option>
                                 </select>
                             </div>
 
@@ -76,14 +76,14 @@
 
                                     @if($sort == 1)
                                     <td class="row">
-                                        <button class="btn btn-warning btn-sm col-md-4 glyphicon glyphicon-move handle">  {{ $category->sort }}</button>
+                                        <button class="btn btn-warning btn-sm col-md-4 glyphicon glyphicon-move handle">  {{ $product->sort }}</button>
                                     </td>
                                     @endif
                                 </tr>
                             @endforeach
                             </tbody>
                         </table>
-                        {!! $products->render() !!}
+                        {!! $products->appends(['category' => $categoryId])->render() !!}
 
                     </div>
                 </div>
@@ -103,17 +103,20 @@
     var vm = new Vue({
         el: "#app",
         data: {
-            parentId: 0,
-            categoryId: "{{ $categoryId }}",
-            chidrenList: [],
+            parentId: "{{ $parentId or '0'}}",
+            childId: "{{ $childId or '0'}}",
+            childrenList: [],
+            showChildren: [],
         },
         ready: function() {
 
-            this.chidrenList['0'] = [];
+            this.childrenList['0'] = [];
+            if(this.parentId !== '0')
+                this.getChildren(this.parentId);
         },
         watch: {
             parentId: function(parentId) {
-                vm.getChidren(parentId);
+                vm.getChildren(parentId);
             }
         },
         methods: {
@@ -129,9 +132,12 @@
                     var returnData = reponse.data;
                     if(returnData.err == 1) {
 
-                        if(type == 'getCategoryList') {
-                            return returnData.extra;
-                        } else if(type == 'delete' ) {
+                        if(type == 'getChildrenList') {
+
+                            vm.childrenList[params.id] = returnData.extra;
+
+                            vm.showChildren = this.childrenList[params.id];
+                        } else if(type == 'delete' || type == 'sort') {
                             swal({
                                 title: '操作结果',
                                 text: returnData.msg,
@@ -171,24 +177,36 @@
 
                     var url = "{{ url('product/destroy').'/' }}" + id;
                     var params = {};
-                    vm.httpPost(url, params);
+                    vm.httpPost(url, params, "delete");
                 });
             },
-            getChidren: function(id) {
+            getChildren: function(id) {
                 {{-- 若不存在父类的子类，获取其的子类列表，并存到数组中 --}}
-                alert(id);
-                console.log(this.chidrenList[id]);
-                if(typeof(this.chidrenList[id]) === 'undefind') {
+                if(typeof(this.childrenList[id]) === 'undefined') {
                     var url = "{{ url('category/children') }}";
                     var params = {
-                        'id': $id
+                        'id': id
                     };
-                    var type = "getCategoryList";
+                    var type = "getChildrenList";
+
                     this.httpPost(url, params, type);
+                } else {
+                    this.showChildren = this.childrenList[id];
                 }
+
             },
             filter: function() {
-                alert(1);
+                var url;
+                if(this.childId !== '0'){
+                    url = "{{ url('product?category=') }}" + this.childId;
+                } else if(this.parentId !== '0') {
+
+                    url = "{{ url('product?category=') }}" + this.parentId;
+                } else {
+                    url = "{{ url('product') }}";
+                }
+
+                window.location.href = url;
             },
             comfirmSort: function() {
                 var url = "{{ url('product/sort') }}";
@@ -197,6 +215,7 @@
                 $("#sort").find(".sort-id").each(function() {
                     arr.push($(this).attr("data-id"));
                 });
+
                 var params = {sort: arr};
 
                 this.httpPost(url, params, "sort");

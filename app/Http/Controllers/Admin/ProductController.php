@@ -21,11 +21,13 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getIndex(Request $request, $categoryId = '0')
+    public function getIndex(Request $request)
     {
-        $data['categoryId'] = (int) $categoryId;
+        $data['categoryId'] = (int)$request->input('category', '0');
 
+        // 商品非快照
         $data['products'] = new Product();
+        $data['products'] = $data['products']->where('snapshot', 0);
 
         $data['parents'] = Category::where('parent_id', 0)->get();
 
@@ -36,23 +38,29 @@ class ProductController extends Controller
         if ($data['categoryId'] !== 0) {
             // 有类别参数
             $category = Category::find($data['categoryId']);
+            $data['category'] = $category;
 
-            if ($category->parent == 0) {
+            if ($category->parent_id == 0) {
                 // 类别为父类别时，获取父类别的所有子类别下的商品
+                $data['parentId'] = $data['categoryId'];
+
                 $chidren = $category->children->keyBy('id');
 
                 $whereIn = $chidren->keys()->toArray();
 
-                $data['products'] = $data['products']->whereIn('category', $whereIn)->paginate($this->pageNum);
+                $data['products'] = $data['products']->whereIn('category_id', $whereIn)->paginate($this->pageNum);
 
                 foreach ($data['products']->items() as &$v) {
-                    $v->categoryName = $chidren[$v->category]->name;
+                    $v->categoryName = $chidren[$v->category_id]->name;
                 }
                 unset($v);
             } else {
                 // 类别为子类别时，获取该类别的商品，需要进行排序，此时不分页
+                $data['parentId'] = $category->parent_id;
+                $data['childId']  = $data['categoryId'];
+
                 $data['sort'] = 1;
-                $data['products'] = $data['products']->where('category', $category->id)->paginate(0);
+                $data['products'] = $data['products']->where('category_id', $category->id)->orderBy('sort')->paginate(0);
 
                 foreach ($data['products']->items() as &$v) {
                     $v->categoryName = $category->name;
@@ -64,7 +72,7 @@ class ProductController extends Controller
             $data['products'] = $data['products']->paginate($this->pageNum);
 
             foreach ($data['products']->items() as &$v) {
-                $v->categoryName = $v->Category->name;
+                $v->categoryName = $v->category->name;
             }
         }
         // dd($data);
@@ -137,8 +145,34 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function postDestroy($id)
     {
-        //
+        // 将商品快照值设为1
+        $product = Product::find($id);
+
+        if($product === null)
+            return response()->json($this->returnData('删除失败，没有找到该商品！'));
+
+        $product->snapshot = 1;
+        $result = $product->save();
+        if(! $result)
+            return response()->json($this->returnData('删除失败！'));
+        else
+            return response()->json($this->returnData('删除成功！', 1));
+    }
+
+    public function postSort(Request $request)
+    {
+
+        $sortArr = $request->input('sort');
+        $i = 1;
+        foreach ($sortArr as $v) {
+            $product[$i] = Product::find($v);
+            $product[$i]->sort = $i;
+            $product[$i]->save();
+            ++$i;
+        }
+
+        return response()->json($this->returnData('排序成功！', 1));
     }
 }
