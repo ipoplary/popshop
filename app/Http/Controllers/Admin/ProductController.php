@@ -24,10 +24,13 @@ class ProductController extends Controller
     public function getIndex(Request $request)
     {
         $data['categoryId'] = (int)$request->input('category', '0');
+        $data['snapshot']   = (int)$request->input('snapshot', '0');
 
         // 商品非快照
         $data['products'] = new Product();
-        $data['products'] = $data['products']->where('snapshot', 0);
+
+        if($data['snapshot'] === 0)
+            $data['products'] = $data['products']->where('snapshot', 0);
 
         $data['parents'] = Category::where('parent_id', 0)->get();
 
@@ -84,9 +87,10 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function getCreate()
     {
-        //
+        $data[] = [];
+        return view('admin.product.edit', $data);
     }
 
     /**

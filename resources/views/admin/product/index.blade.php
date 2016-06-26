@@ -30,6 +30,16 @@
                                 </select>
                             </div>
 
+                            <div class="radio row col-md-2">
+                                <label class="col-md-5 inline">
+                                    <input type="radio" name="snapshot" value="0" v-model="snapshot">不含快照
+                                </label>
+
+                                <label class="col-md-5 inline">
+                                    <input type="radio" name="snapshot" value="1" v-model="snapshot">含快照
+                                </label>
+                            </div>
+
                             <div class="col-md-1">
                                 <button class="btn btn-success" v-on:click="filter">筛选</button>
                             </div>
@@ -62,10 +72,15 @@
                             </thead>
                             <tbody v-sortable="{ handle: '.handle' }" id="sort">
                             @foreach ($products->items() as $product)
-                                <tr class="odd gradeX sort-id" data-id="{{ $product->id }}">
+                                <tr class="odd gradeX sort-id" data-id="{{ $product->id }}" v-bind:class="{'warning': '{{ $product->snapshot==1 }}'}">
                                     <td> {{ $product->id }} </td>
                                     <td> {{ $product->sku }} </td>
-                                    <td> {{ $product->name }} </td>
+                                    <td>
+                                        {{ $product->name }}
+                                        @if($product->snapshot)
+                                            (快照)
+                                        @endif
+                                    </td>
                                     <td> {{ $product->categoryName or '无父类别' }} </td>
                                     <td>
 
@@ -83,7 +98,7 @@
                             @endforeach
                             </tbody>
                         </table>
-                        {!! $products->appends(['category' => $categoryId])->render() !!}
+                        {!! $products->appends(['category' => $categoryId, 'snap' => $snapshot])->render() !!}
 
                     </div>
                 </div>
@@ -103,6 +118,7 @@
     var vm = new Vue({
         el: "#app",
         data: {
+            snapshot: "{{ $snapshot }}",
             parentId: "{{ $parentId or '0'}}",
             childId: "{{ $childId or '0'}}",
             childrenList: [],
@@ -196,16 +212,17 @@
 
             },
             filter: function() {
-                var url;
+                var url = "{{ url('product/index') }}";
+                var category;
                 if(this.childId !== '0'){
-                    url = "{{ url('product?category=') }}" + this.childId;
+                    category = this.childId;
                 } else if(this.parentId !== '0') {
-
-                    url = "{{ url('product?category=') }}" + this.parentId;
+                    category = this.parentId;
                 } else {
-                    url = "{{ url('product') }}";
+                    category = 0;
                 }
-
+                var snapshot = this.snapshot;
+                url += '?category=' + category + '&snapshot=' + snapshot;
                 window.location.href = url;
             },
             comfirmSort: function() {
