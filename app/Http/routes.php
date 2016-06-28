@@ -30,6 +30,7 @@ Route::group(['namespace' => 'Admin', 'domain' => env('ADMIN_URL', 'admin.popsho
 
             Route::controller('category', 'CategoryController');
             Route::controller('product', 'ProductController');
+            Route::controller('upload', 'UploadController');
         });
 });
 

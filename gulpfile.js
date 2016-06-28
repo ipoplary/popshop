@@ -75,6 +75,16 @@ gulp.task("copyfiles", function() {
     gulp.src("node_modules/vue-sortable/vue-sortable.js")
         .pipe(gulp.dest('resources/assets/js/'));
 
+    // summernote
+    gulp.src("vendor/bower_dl/summernote/dist/summernote.css")
+        .pipe(gulp.dest('resources/assets/css/'));
+
+    gulp.src("vendor/bower_dl/summernote/dist/summernote.js")
+        .pipe(gulp.dest('resources/assets/js/'));
+
+    gulp.src("vendor/bower_dl/summernote/dist/font/**")
+        .pipe(gulp.dest('public/build/assets/css/font/'));
+
 
 });
 
@@ -84,7 +94,7 @@ gulp.task("copyfiles", function() {
 elixir(function(mix) {
 
     // 合并 scripts
-    mix.scripts(['js/jquery.js', 'js/bootstrap.js', 'js/vue.js', 'js/vue-resource.js', 'js/vue-async-data.js', 'js/Sortable.min.js', 'js/vue-sortable.js', 'js/app.js', 'js/sweetalert.min.js'],
+    mix.scripts(['js/jquery.js', 'js/bootstrap.js', 'js/vue.js', 'js/vue-resource.js', 'js/vue-async-data.js', 'js/Sortable.min.js', 'js/vue-sortable.js', 'js/app.js', 'js/sweetalert.min.js', 'js/summernote.js'],
         'public/assets/js/admin.js',
         'resources/assets'
     );
@@ -93,7 +103,7 @@ elixir(function(mix) {
     mix.less('admin.less', 'resources/assets/css/admin.css');
 
     // 合并 css
-    mix.styles(['css/admin.css', 'css/sweetalert.css', 'css/AdminLTE.css', 'css/_all-skins.min.css'],
+    mix.styles(['css/admin.css', 'css/sweetalert.css', 'css/AdminLTE.css', 'css/_all-skins.min.css', 'css/summernote.css'],
         'public/assets/css/admin.css',
         'resources/assets'
     );
