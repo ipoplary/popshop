@@ -13,8 +13,8 @@ class SkuTableSeeder extends Seeder
     public function run()
     {
         DB::table('skus')->insert([
-            'prefix' => 'admin',
-            'count' => 3,
+            'prefix' => 'SKU',
+            'count' => 5,
         ]);
     }
 }

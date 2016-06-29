@@ -90,7 +90,7 @@
                         <!-- File Upload -->
                         <div class="controls col-sm-1">
                             <div id="icon"></div>
-                            <div id="image"></div>
+                            <div id="image-banner"></div>
                             <div class="col-sm-1">
                                 <button class="btn btn-primary" v-on:click="startUpload(1)">上传</button>
                             </div>
@@ -102,7 +102,7 @@
                         <!-- File Upload -->
                         <div class="controls col-sm-1">
                             <div id="banner"></div>
-                            <div id="image"></div>
+                            <div id="image-banner"></div>
                             <div class="col-sm-1">
                                 <button class="btn btn-primary" v-on:click="startUpload(2)">上传</button>
                             </div>
@@ -141,50 +141,49 @@
                 focus: false
             });
 
-            this.uploadIcon = this.uploadFiles('icon', 'icon', 1);
+            this.uploadFiles('icon', 'icon', 1);
 
-            this.uploadBanner = this.uploadFiles('banner', 'banner', 5);
+                console.log(this.uploadIcon);
+            //this.uploadBanner = this.uploadFiles('banner', 'banner', 5);
+            //    console.log(this.uploadBanner);
         },
         methods: {
             uploadFiles: function(id, fileName, maxCount) {
                 // 上传图片
-                var uploadFile = $("#" + id).uploadFile({
+                var upload = $("#" + id).uploadFile({
                     url: "{{ url('upload/image') }}",
-                    method: 'POST',
                     fileName: fileName,
                     returnType: 'json',
                     autoSubmit: false,
                     dragDrop: false,
+                    accept: "image/*",
                     showPreview: true,
                     previewWidth: '50%',
                     maxFileCount: maxCount,
                     showFileSize: true,
-                    formData: {
-                        'dir': 'product',
-                        '_token': "{{ csrf_token() }}"
+                    dynamicFormData: function() {
+                        var data = {
+                            'dir': 'product',
+                            '_token': "{{ csrf_token() }}"
+                        };
+                        return data;
                     },
                     showStatusAfterSuccess: false,
                     allowedTypes: "jpg,png,gif,jpeg",
                     onSuccess: function(files,data,xhr,pd) {
-                        console.log(files);
-                        console.log(data);
-                        console.log(xhr);
-                        console.log(pd);
                         alert(1);
 
-                        return;
+                        console.log(files,data,xhr,pd);
+                        return true;
                         vm.image = data.extra.picId;
                         vm.imageUrl = data.extra.url;
                         var imgHtml = '<img data-id="' + vm.image + '" src="' + vm.imageUrl + '" class="icon"/>';
                         $("#image").html(imgHtml);
                     },
                     onError: function(files,status,errMsg,pd) {
-                        console.log(files);
-                        console.log(status);
-                        console.log(errMsg);
-                        console.log(pd);
                         alert(2);
-                        return;
+                        console.log(files,status,errMsg,pd);
+                        return true;
                     },
                     afterUploadAll:function(obj)
                     {
@@ -192,16 +191,20 @@
                     }
 
                 });
-
-                return uploadFile;
+                if(id == 'icon')
+                    this.uploadIcon = upload;
+                else
+                    this.uploadBanner = upload;
+                console.log(this.uploadIcon);
+                return;
             },
             startUpload: function(type) {
+                alert(typeof(this.uploadIcon));
+                console.log(this.uploadIcon);
                 if(type == 1)
-                    var obj = this.uploadIcon;
+                    this.uploadIcon.startUpload();
                 else if(type == 2)
-                    var obj = this.uploadBanner;
-                console.log(obj);
-                obj.startUpload();
+                    this.uploadBanner.startUpload();
             },
             httpPost: function(url, params, type) {
                 this.$http.post( url, params, {
