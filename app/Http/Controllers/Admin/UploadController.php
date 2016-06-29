@@ -85,8 +85,9 @@ class UploadController extends Controller
         //
     }
 
-    public function postPicture(Request $request)
+    public function postImage(Request $request)
     {
-        dd($request->all());
+
+        return $this->returnData('test');
     }
 }

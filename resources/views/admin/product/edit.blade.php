@@ -86,15 +86,26 @@
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品图片</label>
-                        <div class="controls col-sm-3">
-                            <input name="icon" id="upload-icon" type="file" class="file" data-preview-file-type="text"  value>
+
+                        <!-- File Upload -->
+                        <div class="controls col-sm-1">
+                            <div id="icon"></div>
+                            <div id="image"></div>
+                            <div class="col-sm-1">
+                                <button class="btn btn-primary" v-on:click="startUpload(1)">上传</button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品轮播图</label>
-                        <div class="controls col-sm-3">
-                            <input name="banner" id="upload-banner" type="file" class="file" data-preview-file-type="text"  value>
+                        <!-- File Upload -->
+                        <div class="controls col-sm-1">
+                            <div id="banner"></div>
+                            <div id="image"></div>
+                            <div class="col-sm-1">
+                                <button class="btn btn-primary" v-on:click="startUpload(2)">上传</button>
+                            </div>
                         </div>
                     </div>
 
@@ -118,6 +129,8 @@
         data: {
             name: "{{ $name or '' }}",
             sku: "{{ $sku }}",
+            uploadIcon: '',
+            uploadBanner: '',
         },
         ready: function() {
             // 编辑器
@@ -128,8 +141,68 @@
                 focus: false
             });
 
+            this.uploadIcon = this.uploadFiles('icon', 'icon', 1);
+
+            this.uploadBanner = this.uploadFiles('banner', 'banner', 5);
         },
         methods: {
+            uploadFiles: function(id, fileName, maxCount) {
+                // 上传图片
+                var uploadFile = $("#" + id).uploadFile({
+                    url: "{{ url('upload/image') }}",
+                    method: 'POST',
+                    fileName: fileName,
+                    returnType: 'json',
+                    autoSubmit: false,
+                    dragDrop: false,
+                    showPreview: true,
+                    previewWidth: '50%',
+                    maxFileCount: maxCount,
+                    showFileSize: true,
+                    formData: {
+                        'dir': 'product',
+                        '_token': "{{ csrf_token() }}"
+                    },
+                    showStatusAfterSuccess: false,
+                    allowedTypes: "jpg,png,gif,jpeg",
+                    onSuccess: function(files,data,xhr,pd) {
+                        console.log(files);
+                        console.log(data);
+                        console.log(xhr);
+                        console.log(pd);
+                        alert(1);
+
+                        return;
+                        vm.image = data.extra.picId;
+                        vm.imageUrl = data.extra.url;
+                        var imgHtml = '<img data-id="' + vm.image + '" src="' + vm.imageUrl + '" class="icon"/>';
+                        $("#image").html(imgHtml);
+                    },
+                    onError: function(files,status,errMsg,pd) {
+                        console.log(files);
+                        console.log(status);
+                        console.log(errMsg);
+                        console.log(pd);
+                        alert(2);
+                        return;
+                    },
+                    afterUploadAll:function(obj)
+                    {
+                        alert(3);
+                    }
+
+                });
+
+                return uploadFile;
+            },
+            startUpload: function(type) {
+                if(type == 1)
+                    var obj = this.uploadIcon;
+                else if(type == 2)
+                    var obj = this.uploadBanner;
+                console.log(obj);
+                obj.startUpload();
+            },
             httpPost: function(url, params, type) {
                 this.$http.post( url, params, {
                     headers: {
