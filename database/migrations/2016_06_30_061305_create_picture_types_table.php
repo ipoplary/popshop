@@ -3,19 +3,19 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePicturesTable extends Migration
+class CreatePictureTypesTable extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
     public function up()
     {
-        Schema::create('pictures', function (Blueprint $table) {
+        Schema::create('picture_types', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('type_id');
-            $table->string('name', 191)->unique()->nullable();
-            $table->string('path', 191)->unique();
-            $table->string('md5', 191)->unique();
+            $table->string('dir', 191)->unique();
+            $table->string('name', 191)->unique();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -23,9 +23,11 @@ class CreatePicturesTable extends Migration
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
     public function down()
     {
-        Schema::drop('images');
+        Schema::drop('picture_types');
     }
 }

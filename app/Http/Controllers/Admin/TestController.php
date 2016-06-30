@@ -6,17 +6,25 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Storage;
+use Response;
 
-class UploadController extends Controller
+class TestController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function getIndex()
     {
-        //
+        echo md5_file(public_path('upload/product/test1.jpg'));
+        echo '<br/>';
+        echo md5_file(public_path('upload/product/test2.jpg'));
+        echo '<br/>';
+        echo md5_file(public_path('upload/product/test3.jpg'));
+        echo '<br/>';
+        echo md5_file(public_path('upload/product/test4.jpg'));
     }
 
     /**
@@ -83,11 +91,5 @@ class UploadController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function postPicture(Request $request)
-    {
-
-        return $this->returnData('test');
     }
 }

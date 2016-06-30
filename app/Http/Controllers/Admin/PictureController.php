@@ -6,17 +6,24 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Models\PictureType;
+use App\Models\Picture;
 
-class UploadController extends Controller
+class PictureController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function getIndex()
     {
-        //
+        // 图片类别
+        $data['pictureTypes'] = PictureType::get();
+        // 图片列表
+        $data['pictures'] = Picture::get();
+
+        return view('admin.picture.index', $data);
     }
 
     /**
@@ -83,11 +90,5 @@ class UploadController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function postPicture(Request $request)
-    {
-
-        return $this->returnData('test');
     }
 }

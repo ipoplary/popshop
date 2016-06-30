@@ -135,6 +135,8 @@ elixir(function(mix) {
             'css/_all-skins.min.css',
             'css/summernote.css',
             'css/uploadfile.css',
+
+            'my/css/admin.css',
         ],
         'public/assets/css/admin.css',
         'resources/assets'

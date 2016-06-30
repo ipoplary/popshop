@@ -21,16 +21,17 @@ Route::group(['namespace' => 'Admin', 'domain' => env('ADMIN_URL', 'admin.popsho
 
         Route::get('logout', 'AuthController@getLogout');
 
-            Route::controller('upload', 'UploadController');
-
+        Route::controller('test', 'TestController');
         Route::group(['middleware' => 'auth'], function() {
 
             Route::controller('home', 'HomeController');
 
             Route::get('/', 'HomeController@getIndex');
 
+            Route::controller('upload', 'UploadController');
             Route::controller('category', 'CategoryController');
             Route::controller('product', 'ProductController');
+            Route::controller('picture', 'PictureController');
         });
 });
 
