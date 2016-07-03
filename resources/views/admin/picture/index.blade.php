@@ -26,46 +26,48 @@
             <div class="tab-content col-md-11">
                 <ul>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test2.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test3.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test4.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
                     </li>
                     <li class="picture-list">
-                        <img class="picture-list-img" src="{{ asset('upload/img/product/test1.jpg') }}" />
+                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
                     </li>
                 </ul>
             </div>
         </div>
     </div>
 @endsection
+
+@include('admin.picture.upload')
 
 @section('script')
 <script>

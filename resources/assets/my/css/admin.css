@@ -7,7 +7,7 @@ li.picture-list{
     border: 1px solid #E7E7EB;
     list-style: none;
     position: relative;
-    margin: 0 20px 20px 0;
+    margin: 20px 10px 0 10px;
 }
 img.picture-list-img{
     width: 100%;

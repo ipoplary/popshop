@@ -90,6 +90,11 @@
                                 <i class="fa fa-user"></i> <span>用户</span>
                             </a>
                         </li>
+                        <li>
+                            <a href=" {{ url('picture') }} ">
+                                <i class="fa fa-tag"></i> <span>图片</span>
+                            </a>
+                        </li>
                     </ul>
                 </section>
                 {{-- /.sidebar --}}
