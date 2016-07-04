@@ -19,7 +19,7 @@
                 @endforeach
 
                 <button class="btn btn-primary col-md-1 pull-right">添加类别</button>
-                <button class="btn btn-success col-md-1 pull-right">上传图片</button>
+                <button class="btn btn-success col-md-1 pull-right" v-on:click="uploadModal">上传图片</button>
 
             </ul>
 
@@ -67,9 +67,10 @@
     </div>
 @endsection
 
-@include('admin.picture.upload')
 
 @section('script')
+
+@include('admin.picture.upload')
 <script>
 
     var vm = new Vue({
@@ -111,6 +112,9 @@
             getPicutures: function(type) {
                 this.type = type;
             },
+            uploadModal: function() {
+                uploadVm.show();
+            }
         }
     });
 
