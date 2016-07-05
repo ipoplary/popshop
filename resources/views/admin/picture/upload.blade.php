@@ -61,7 +61,7 @@
                 dynamicFormData: function() {
                     var data = {
                         'dir': uploadVm.pictureType,
-                '_token': "{{ csrf_token() }}"
+                        '_token': "{{ csrf_token() }}"
                     };
                     return data;
                 },
