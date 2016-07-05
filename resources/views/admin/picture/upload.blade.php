@@ -69,7 +69,7 @@
                 allowedTypes: "jpg,png,gif,jpeg",
                 onSuccess: function(files,data,xhr,pd) {
                     var response = xhr.responseJSON;
-                    if(response.err == 0)
+                    if(response.err == 1)
                         swal("上传成功！", data.msg, "success");
                     else
                         swal("上传失败！", errMsg, "error");

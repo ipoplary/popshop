@@ -96,6 +96,10 @@ class UploadController extends Controller
         }
         $file = $request->file('picture');
 
+        var_dump($file->getPath());
+        var_dump(md5_file($file->getRealPath()));
+
+        var_dump(md5_file($file));
         //判断文件上传过程中是否出错
         if(!$file->isValid()){
             exit('文件上传出错！');
@@ -107,30 +111,35 @@ class UploadController extends Controller
 
         // 重命名图片
         $newFileName = md5(time().rand(0,10000)).'.'.$file->getClientOriginalExtension();
-        $savePath = 'upload/img/'.$pictureType->dir.'/'.$newFileName;
+        $filePath = 'upload/img/'.$pictureType->dir.'/'.$newFileName;
+
+        if(! is_dir('upload/img/'.$pictureType->dir))
+            mkdir('upload/img/'.$pictureType->dir, '0777');
 
         // 上传图片
-        $image  = Image::make($file);
-        if($image->save($filePath))
-            return response()->json($this->returnData('上传失败！'));
+        $image  = Image::make($filePath);
 
+        if(! $image->save($filePath))
+            return response()->json($this->returnData('上传失败！'));
+        var_dump(public_path($filePath));dd();
+        dd(md5_file(public_path($filePath)));
         // 保存图片数据到数据库
         $picture = new Picture;
         $insertArr = [
             'type_id' => $pictureTypeId,
             'name' => $newFileName,
-            'path' => $savePath,
-            'md5'  => md5_file(),
+            'path' => $filePath,
+            'md5'  => md5_file($filePath),
         ];
         $pictureId = (string)$picture->insertGetId($insertArr);
 
         // 保存结果处理
         if($pictureId) {
             $extra = [
-                'url' => asset($savePath),
+                'url' => asset($filePath),
                 'picureId' => $pictureId
             ];
-            return response()->json($this->returnData('提交成功！', 1, $extra));
+            return response()->json($this->returnData('上传成功！', 1, $extra));
         } else {
             return response()->json($this->returnData('保存失败！'));
         }
