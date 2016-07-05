@@ -24,7 +24,7 @@
                     <div class="col-sm-3"></div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" v-show="pictureType">
                     <label class="control-label col-sm-3">上传图片：</label>
                     <div class="controls col-sm-6">
                         <div id="fileuploader">选择图片</div>
@@ -34,7 +34,6 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary">上传</button>
             </div>
         </div>
     </div>
@@ -44,33 +43,46 @@
     var uploadVm = new Vue({
         el: "#uploadModal",
         data: {
-            pictureType: "{{ $pictureService->pictureType()->first()->id }}",
+            pictureType: null,
+            uploadObj: null,
         },
         ready: function() {
-            $("#fileuploader").uploadFile({
+            this.uploadObj = $("#fileuploader").uploadFile({
                 url:"{{ url('upload/picture') }}",
                 fileName: 'picture',
                 returnType: 'json',
+                autoSubmit: true,
                 dragDrop: false,
+                showPreview: true,
+                multiple: true,
                 accept: "image/*",
                 previewWidth: '50%',
                 showFileSize: true,
                 dynamicFormData: function() {
                     var data = {
-                        'dir': 'product',
-                        '_token': "{{ csrf_token() }}"
+                        'dir': uploadVm.pictureType,
+                '_token': "{{ csrf_token() }}"
                     };
                     return data;
                 },
-                showStatusAfterSuccess: false,
+                showStatusAfterSuccess: true,
                 allowedTypes: "jpg,png,gif,jpeg",
                 onSuccess: function(files,data,xhr,pd) {
-                    alert(1);
+                    var response = xhr.responseJSON;
+                    if(response.err == 0)
+                        swal("上传成功！", data.msg, "success");
+                    else
+                        swal("上传失败！", errMsg, "error");
+                    return ;
                 },
                 onError: function(files,status,errMsg,pd) {
                     swal("上传失败！", errMsg, "error");
-                    return;
+                    return ;
+                },
+                afterUploadAll: function(obj) {
+                    swal("上传成功！", data.msg, "success");
                 }
+
             });
         },
         methods: {

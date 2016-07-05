@@ -10,11 +10,11 @@
 
             <ul class="nav nav-tabs">
                 <li v-on:click="getPicutures(0)" v-bind:class="[type == 0? 'active':'']">
-                     <a href="javaScript:;">所有图片</a>
+                    <a href="javaScript:;">所有图片</a>
                 </li>
                 @foreach($pictureTypes as $pictureType)
                 <li v-on:click="getPicutures({{ $pictureType->id }})" v-bind:class="[type == '{{ $pictureType->id }}'? 'active':'']">
-                     <a href="javaScript:;">{{ $pictureType->name }}</a>
+                    <a href="javaScript:;">{{ $pictureType->name }}</a>
                 </li>
                 @endforeach
 
@@ -31,42 +31,11 @@
                     <li class="picture-list">
                         <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test2.jpg') }}" />
                     </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test3.jpg') }}" />
-                    </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test4.jpg') }}" />
-                    </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
-                    </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
-                    </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
-                    </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
-                    </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
-                    </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
-                    </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
-                    </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
-                    </li>
                 </ul>
             </div>
         </div>
     </div>
 @endsection
-
 
 @section('script')
 
@@ -77,7 +46,7 @@
         el: "#picture",
         data: {
             type: 0,
-            pictureList: [],
+            pictureList: null,
         },
         ready: function() {
 
