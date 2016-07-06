@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var elixir = require('laravel-elixir');
+var replace = require('gulp-replace');
 
 elixir.config.sourcemaps = false;
 /**
@@ -96,6 +97,21 @@ gulp.task("copyfiles", function() {
     gulp.src("node_modules/jquery-file-upload/css/uploadfile.css")
         .pipe(gulp.dest('resources/assets/css/'));
 
+    // jquery.filer
+    gulp.src("vendor/bower_dl/jquery.filer/js/jquery.filer.min.js")
+        .pipe(gulp.dest('resources/assets/js/'));
+
+    gulp.src("vendor/bower_dl/jquery.filer/css/jquery.filer.css")
+        .pipe(gulp.dest('resources/assets/css/'));
+
+});
+
+// 修改文件内容
+gulp.task('edit', function(){
+
+    gulp.src(['resources/assets/css/jquery.filer.css'])
+        .pipe(replace('../assets/fonts/jquery.filer-icons/jquery-filer.css', '../fonts/jquery-filer.css'))
+        .pipe(gulp.dest('resources/assets/css/'));
 });
 
 /**
@@ -118,6 +134,7 @@ elixir(function(mix) {
             'js/summernote.js',
             'js/jquery.form.js',
             'js/jquery.uploadfile.min.js',
+            'js/jquery.filer.min.js',
         ],
         'public/assets/js/admin.js',
         'resources/assets'
@@ -135,6 +152,7 @@ elixir(function(mix) {
             'css/_all-skins.min.css',
             'css/summernote.css',
             'css/uploadfile.css',
+            'css/jquery.filer.css',
 
             'my/css/admin.css',
         ],

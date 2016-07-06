@@ -26,8 +26,10 @@
 
                 <div class="form-group" v-show="pictureType">
                     <label class="control-label col-sm-3">上传图片：</label>
-                    <div class="controls col-sm-6">
-                        <div id="fileuploader">选择图片</div>
+                    <div class="controls col-sm-9">
+                        {{--<div id="fileuploader">选择图片</div>--}}
+                        <input type="file" name="files[]" id="fileuploader" multiple="multiple">
+                        <input type="submit" class="btn btn-success" value="Submit">
                     </div>
                 </div>
             </div>
@@ -47,7 +49,7 @@
             uploadObj: null,
         },
         ready: function() {
-            this.uploadObj = $("#fileuploader").uploadFile({
+            /*this.uploadObj = $("#fileuploader").uploadFile({
                 url:"{{ url('upload/picture') }}",
                 fileName: 'picture',
                 returnType: 'json',
@@ -83,6 +85,45 @@
                     swal("上传成功！", data.msg, "success");
                 }
 
+            });*/
+            $('#fileuploader').filer({
+                // limit: 3,
+                maxSize: 3,
+                extensions: ['jpg', 'jpeg', 'png', 'gif'],
+                changeInput: true,
+                showThumbs: true,
+                addMore: true,
+                templates: {
+                box: '<ul class="jFiler-items-list jFiler-items-grid"></ul>',
+                item: '<li class="jFiler-item">\
+                            <div class="jFiler-item-container">\
+                                <div class="jFiler-item-inner">\
+                                    <div class="jFiler-item-thumb">\
+                                        <div class="jFiler-item-status"></div>\
+                                        <div class="jFiler-item-info">\
+                                            <span class="jFiler-item-title"><b title="@{{fi-name}}">@{{fi-name | limitTo: 25}}</b></span>\
+                                            <span class="jFiler-item-others">@{{fi-size2}}</span>\
+                                        </div>\
+                                        @{{fi-image}}\
+                                    </div>\
+                                    <div class="jFiler-item-assets jFiler-row">\
+                                        <ul class="list-inline pull-left"></ul>\
+                                        <ul class="list-inline pull-right">\
+                                            <li><a class="icon-jfi-trash jFiler-item-trash-action"></a></li>\
+                                        </ul>\
+                                    </div>\
+                                </div>\
+                            </div>\
+                        </li>',
+
+                itemAppendToEnd: false,
+                removeConfirmation: true,
+                _selectors: {
+                    list: '.jFiler-items-list',
+                    item: '.jFiler-item',
+                    remove: '.jFiler-item-trash-action'
+                }
+            },
             });
         },
         methods: {
