@@ -1,7 +1,9 @@
-@inject('pictureService', 'App\Services\PictureService')
+@if(! isset($pictureService))
+    @inject('pictureService', 'App\Services\PictureService')
+@endif
 
-<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
+<div class="modal fade bs-example-modal-lg" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
 
         <div class="modal-content">
 
@@ -9,33 +11,35 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">上传图片</h4>
             </div>
+            <form>
+                {{ csrf_field() }}
+                <div class="modal-body form-horizontal">
 
-            <div class="modal-body form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-3">图片类别：</label>
+                        <div class="controls col-sm-2">
+                            <select class="form-control input-xlarge" name="type" v-model="pictureType">
+                                @foreach($pictureService->pictureType() as $v)
+                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                <div class="form-group">
-                    <label class="control-label col-sm-3">图片类别：</label>
-                    <div class="controls col-sm-6">
-                        <select class="form-control input-xlarge" v-model="pictureType">
-                            @foreach($pictureService->pictureType() as $v)
-                            <option value="{{ $v->id }}">{{ $v->name }}</option>
-                            @endforeach
-                        </select>
                     </div>
-                    <div class="col-sm-3"></div>
-                </div>
 
-                <div class="form-group" v-show="pictureType">
-                    <label class="control-label col-sm-3">上传图片：</label>
-                    <div class="controls col-sm-9">
-                        {{--<div id="fileuploader">选择图片</div>--}}
-                        <input type="file" name="files[]" id="fileuploader" multiple="multiple">
-                        <input type="submit" class="btn btn-success" value="Submit">
+                    <div class="form-group" v-show="pictureType">
+                        <label class="control-label col-sm-3">上传图片：</label>
+                        <div class="controls col-sm-9">
+                            {{--<div id="fileuploader">选择图片</div>--}}
+                            <input type="file" name="files[]" id="fileuploader" multiple="multiple">
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" v-on:click="confirmUpload">上传</button>
+                <button type="button" class="btn btn-default" v-on:click="cancelUpload">取消</button>
             </div>
         </div>
     </div>
@@ -49,43 +53,6 @@
             uploadObj: null,
         },
         ready: function() {
-            /*this.uploadObj = $("#fileuploader").uploadFile({
-                url:"{{ url('upload/picture') }}",
-                fileName: 'picture',
-                returnType: 'json',
-                autoSubmit: true,
-                dragDrop: false,
-                showPreview: true,
-                multiple: true,
-                accept: "image/*",
-                previewWidth: '50%',
-                showFileSize: true,
-                dynamicFormData: function() {
-                    var data = {
-                        'dir': uploadVm.pictureType,
-                        '_token': "{{ csrf_token() }}"
-                    };
-                    return data;
-                },
-                showStatusAfterSuccess: true,
-                allowedTypes: "jpg,png,gif,jpeg",
-                onSuccess: function(files,data,xhr,pd) {
-                    var response = xhr.responseJSON;
-                    if(response.err == 1)
-                        swal("上传成功！", data.msg, "success");
-                    else
-                        swal("上传失败！", errMsg, "error");
-                    return ;
-                },
-                onError: function(files,status,errMsg,pd) {
-                    swal("上传失败！", errMsg, "error");
-                    return ;
-                },
-                afterUploadAll: function(obj) {
-                    swal("上传成功！", data.msg, "success");
-                }
-
-            });*/
             $('#fileuploader').filer({
                 // limit: 3,
                 maxSize: 3,
@@ -94,37 +61,38 @@
                 showThumbs: true,
                 addMore: true,
                 templates: {
-                box: '<ul class="jFiler-items-list jFiler-items-grid"></ul>',
-                item: '<li class="jFiler-item">\
-                            <div class="jFiler-item-container">\
-                                <div class="jFiler-item-inner">\
-                                    <div class="jFiler-item-thumb">\
-                                        <div class="jFiler-item-status"></div>\
-                                        <div class="jFiler-item-info">\
-                                            <span class="jFiler-item-title"><b title="@{{fi-name}}">@{{fi-name | limitTo: 25}}</b></span>\
-                                            <span class="jFiler-item-others">@{{fi-size2}}</span>\
+                    box: '<ul class="jFiler-items-list jFiler-items-grid"></ul>',
+                    item: '<li class="jFiler-item">\
+                                <div class="jFiler-item-container">\
+                                    <div class="jFiler-item-inner">\
+                                        <div class="jFiler-item-thumb">\
+                                            <div class="jFiler-item-status"></div>\
+                                            <div class="jFiler-item-info">\
+                                                <span class="jFiler-item-title"><b title="@{{fi-name}}">@{{fi-name | limitTo: 25}}</b></span>\
+                                                <span class="jFiler-item-others">@{{fi-size2}}</span>\
+                                            </div>\
+                                            @{{fi-image}}\
                                         </div>\
-                                        @{{fi-image}}\
-                                    </div>\
-                                    <div class="jFiler-item-assets jFiler-row">\
-                                        <ul class="list-inline pull-left"></ul>\
-                                        <ul class="list-inline pull-right">\
-                                            <li><a class="icon-jfi-trash jFiler-item-trash-action"></a></li>\
-                                        </ul>\
+                                        <div class="jFiler-item-assets jFiler-row">\
+                                            <ul class="list-inline pull-left"></ul>\
+                                            <ul class="list-inline pull-right">\
+                                                <li><a class="icon-jfi-trash jFiler-item-trash-action"></a></li>\
+                                            </ul>\
+                                        </div>\
                                     </div>\
                                 </div>\
-                            </div>\
-                        </li>',
+                            </li>',
 
-                itemAppendToEnd: false,
-                removeConfirmation: true,
-                _selectors: {
-                    list: '.jFiler-items-list',
-                    item: '.jFiler-item',
-                    remove: '.jFiler-item-trash-action'
-                }
-            },
+                    itemAppendToEnd: false,
+                    removeConfirmation: true,
+                    _selectors: {
+                        list: '.jFiler-items-list',
+                        item: '.jFiler-item',
+                        remove: '.jFiler-item-trash-action'
+                    }
+                },
             });
+            this.uploadObj = $("#fileuploader").prop("jFiler");
         },
         methods: {
             show: function() {
@@ -139,6 +107,46 @@
                 $('#uploadModal').modal('toggle');
                 return;
             },
+            confirmUpload: function() {
+                // var formData = new FormData($('form')[0]);
+                // $.ajax({
+                //     url: "{{ url('upload/picture') }}",
+                //     type: 'POST',
+                //     xhr: function() {
+                //         myXhr = $.ajaxSettings.xhr();
+                //         if(myXhr.upload){
+                //             myXhr.upload.addEventListener('progress',progressHandlingFunction, false);
+                //         }
+                //         return myXhr;
+                //     },
+                //     success: function() {
+                //     },
+                //     error: function() {
+                //     },
+
+                //     data: formData,
+                // });
+
+                var options = {
+                    url:"{{ url('upload/picture') }}",
+                    resetForm: true,
+                    type: 'POST',
+                    dataType:  'json',
+                    success: function() {
+                    },
+                    error: function() {
+                    },
+                };
+
+
+                $('form').ajaxSubmit(options);
+                return false;
+            },
+            cancelUpload: function() {
+                this.pictureType = null;
+                this.uploadObj.reset();
+                this.hide();
+            }
         }
     });
 </script>

@@ -10,4 +10,9 @@ class Picture extends Model
     use SoftDeletes;
 
     protected $dates = ['deleted_at'];
+
+    public function PictureType()
+    {
+        return $this->belongsTo('App\Models\PictureType', 'type_id', 'id');
+    }
 }

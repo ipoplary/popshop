@@ -4,15 +4,21 @@
 
 @section('app', 'picture')
 
+@if(! isset($pictureService))
+    @inject('pictureService', 'App\Services\PictureService')
+@endif
+
 @section('content')
     <div class="row">
         <div class="col-md-12">
 
             <ul class="nav nav-tabs">
+
                 <li v-on:click="getPicutures(0)" v-bind:class="[type == 0? 'active':'']">
                     <a href="javaScript:;">所有图片</a>
                 </li>
-                @foreach($pictureTypes as $pictureType)
+
+                @foreach($pictureService->pictureType() as $pictureType)
                 <li v-on:click="getPicutures({{ $pictureType->id }})" v-bind:class="[type == '{{ $pictureType->id }}'? 'active':'']">
                     <a href="javaScript:;">{{ $pictureType->name }}</a>
                 </li>
@@ -25,11 +31,8 @@
 
             <div class="tab-content col-md-11">
                 <ul>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test1.jpg') }}" />
-                    </li>
-                    <li class="picture-list">
-                        <img class="picture-list-img img-responsive" src="{{ asset('upload/img/product/test2.jpg') }}" />
+                    <li class="picture-list" v-for="picture in pictures">
+                        <img class="picture-list-img img-responsive" v-bind:src="picture.url" v-bind:alt="picture.name" />
                     </li>
                 </ul>
             </div>
@@ -46,7 +49,7 @@
         el: "#picture",
         data: {
             type: 0,
-            pictureList: null,
+            pictures: {!! $pictures !!},
         },
         ready: function() {
 

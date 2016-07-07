@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Image;
 use App\Models\Picture;
 use App\Models\PictureType;
+use DB;
 
 class UploadController extends Controller
 {
@@ -90,48 +91,47 @@ class UploadController extends Controller
 
     public function postPicture(Request $request)
     {
-        //判断请求中是否包含name=picture的上传文件
-        if(!$request->hasFile('picture')){
-            exit('上传文件为空！');
-        }
-        $file = $request->file('picture');
+        $pictureList = [];
+        // 事务
+        DB::transaction(function () use($request, $pictureList) {
+            //判断请求中是否包含name=picture的上传文件
+            if(!$request->hasFile('files')){
+                exit('上传文件为空！');
+            }
+            $files = $request->file('files');
 
-        var_dump($file->getPath());
-        var_dump(md5_file($file->getRealPath()));
+            // 获取传过来的图片类别，并将其作为目录名称
+            $pictureTypeId = (int)$request->input('type');
+            $pictureDir = PictureType::find($pictureTypeId)->dir;
 
-        var_dump(md5_file($file));
-        //判断文件上传过程中是否出错
-        if(!$file->isValid()){
-            exit('文件上传出错！');
-        }
+            foreach($files as $file) {
+                //判断文件上传过程中是否出错
+                if(!$file->isValid()){
+                    exit('文件上传出错！');
+                }
 
-        // 获取传过来的图片类别，并将其作为目录名称
-        $pictureTypeId = (int)$request->input('dir');
-        $pictureType = PictureType::find($pictureTypeId);
+                // 重命名图片
+                $newFileName = md5(time().rand(0,10000)).'.'.$file->getClientOriginalExtension();
+                $filePath = 'upload/img/'.$pictureDir.'/'.$newFileName;
+                // dd($filePath);
+                // 上传图片
+                $image  = Image::make($filePath);
+                if(! $image->save($filePath))
+                    return response()->json($this->returnData('上传失败！'));
 
-        // 重命名图片
-        $newFileName = md5(time().rand(0,10000)).'.'.$file->getClientOriginalExtension();
-        $filePath = 'upload/img/'.$pictureType->dir.'/'.$newFileName;
+                // 保存图片数据到数据库
+                $picture = new Picture;
+                $insertArr = [
+                    'type_id' => $pictureTypeId,
+                    'name' => $newFileName,
+                    'path' => $filePath,
+                    'md5'  => md5_file($filePath),
+                ];
+                $pictureList[] = $insertArr;
+                $pictureId = (string)$picture->insertGetId($insertArr);
+            }
 
-        if(! is_dir('upload/img/'.$pictureType->dir))
-            mkdir('upload/img/'.$pictureType->dir, '0777');
-
-        // 上传图片
-        $image  = Image::make($filePath);
-
-        if(! $image->save($filePath))
-            return response()->json($this->returnData('上传失败！'));
-        var_dump(public_path($filePath));dd();
-        dd(md5_file(public_path($filePath)));
-        // 保存图片数据到数据库
-        $picture = new Picture;
-        $insertArr = [
-            'type_id' => $pictureTypeId,
-            'name' => $newFileName,
-            'path' => $filePath,
-            'md5'  => md5_file($filePath),
-        ];
-        $pictureId = (string)$picture->insertGetId($insertArr);
+        });
 
         // 保存结果处理
         if($pictureId) {

@@ -18,10 +18,20 @@ class PictureController extends Controller
      */
     public function getIndex()
     {
-        // 图片类别
-        $data['pictureTypes'] = PictureType::get();
-        // 图片列表
-        $data['pictures'] = Picture::get();
+        // 图片列表，倒序排列
+        $pictures = Picture::orderBy('id', 'desc')->get(['id', 'name', 'path', 'type_id']);
+
+        // 获取图片类型
+        foreach($pictures as $v) {
+            $v->pictureTypeName = $v->pictureType->name;
+            $v->pictureTypeDir = $v->pictureType->dir;
+            $v->url = asset($v->path);
+            unset($v->pictureType);
+        }
+        unset($v);
+
+        // 图片数据转为json数据
+        $data['pictures'] = json_encode($pictures->keyBy('id')->toArray());
 
         return view('admin.picture.index', $data);
     }
