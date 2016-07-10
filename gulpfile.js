@@ -90,13 +90,6 @@ gulp.task("copyfiles", function() {
     gulp.src("vendor/bower_dl/jquery-form/jquery.form.js")
         .pipe(gulp.dest('resources/assets/js/'));
 
-    // jquery-file-upload
-    gulp.src("node_modules/jquery-file-upload/js/jquery.uploadfile.min.js")
-        .pipe(gulp.dest('resources/assets/js/'));
-
-    gulp.src("node_modules/jquery-file-upload/css/uploadfile.css")
-        .pipe(gulp.dest('resources/assets/css/'));
-
     // jquery.filer
     gulp.src("vendor/bower_dl/jquery.filer/js/jquery.filer.min.js")
         .pipe(gulp.dest('resources/assets/js/'));
@@ -133,7 +126,6 @@ elixir(function(mix) {
             'js/sweetalert.min.js',
             'js/summernote.js',
             'js/jquery.form.js',
-            'js/jquery.uploadfile.min.js',
             'js/jquery.filer.min.js',
         ],
         'public/assets/js/admin.js',
@@ -151,7 +143,6 @@ elixir(function(mix) {
             'css/AdminLTE.css',
             'css/_all-skins.min.css',
             'css/summernote.css',
-            'css/uploadfile.css',
             'css/jquery.filer.css',
 
             'my/css/admin.css',

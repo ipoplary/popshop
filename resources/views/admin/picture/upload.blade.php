@@ -55,7 +55,7 @@
         ready: function() {
             $('#fileuploader').filer({
                 // limit: 3,
-                maxSize: 3,
+                maxSize: 1,
                 extensions: ['jpg', 'jpeg', 'png', 'gif'],
                 changeInput: true,
                 showThumbs: true,
@@ -110,7 +110,7 @@
             confirmUpload: function() {
                 // var formData = new FormData($('form')[0]);
                 // $.ajax({
-                //     url: "{{ url('upload/picture') }}",
+                //     url: "{{ url('picture/upload') }}",
                 //     type: 'POST',
                 //     xhr: function() {
                 //         myXhr = $.ajaxSettings.xhr();
@@ -128,7 +128,7 @@
                 // });
 
                 var options = {
-                    url:"{{ url('upload/picture') }}",
+                    url:"{{ url('picture/upload') }}",
                     resetForm: true,
                     type: 'POST',
                     dataType:  'json',
