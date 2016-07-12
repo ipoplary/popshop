@@ -16,8 +16,8 @@ class CreatePictureTypesTable extends Migration
             $table->increments('id');
             $table->string('dir', 191)->unique();
             $table->string('name', 191)->unique();
+            $table->nullableTimestamps();
             $table->softDeletes();
-            $table->timestamps();
         });
     }
 

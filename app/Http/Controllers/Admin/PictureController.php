@@ -116,8 +116,7 @@ class PictureController extends Controller
                 exit('上传文件为空！');
             }
             $files = $request->file('files');
-            var_dump($_FILES);
-            var_dump($files);
+
             // 获取传过来的图片类别，并将其作为目录名称
             $pictureTypeId = (int)$request->input('type');
             $pictureDir = PictureType::find($pictureTypeId)->dir;
@@ -127,28 +126,31 @@ class PictureController extends Controller
                 if(! $file->isValid())
                     return response()->json($this->returnData('文件上传失败！'));
 
-                var_dump(get_class_methods($file));echo '<br/>';echo '<br/>';
-                var_dump(md5_file($file->getPathname()));echo '<br/>';echo '<br/>';
                 // 重命名图片
                 $newFileName = md5(time().rand(0,10000)).'.'.$file->getClientOriginalExtension();
                 $filePath = 'upload/img/'.$pictureDir.'/'.$newFileName;
 
                 // 上传图片
                 $image  = Image::make($file);
-                var_dump($image);echo '<br/>';echo '<br/>';
                 if(! $image->save($filePath))
                     return response()->json($this->returnData('文件保存失败！'));
 
-                var_dump(md5_file(public_path($filePath)));echo '<br/>';echo '<br/>';
-                var_dump(md5_file(public_path('upload/img/category/8404076e2d84cfc19c716799542d3ade.jpg')));
-                dd();
+                $imageMd5 = md5_file($filePath);
+                // 数据库中若有MD5相同的图片，则删除该图片
+                $isExist = Picture::where('md5', $imageMd5)->first();
+                dd($isExist);
+                if($isExist !== null) {
+                    $pictureList[] = $isExist->toArray();
+                    dd($isExist->all()->toArray());
+                }
+                dd($pictureList);
                 // 保存图片数据到数据库
                 $picture = new Picture;
                 $insertArr = [
                     'type_id' => $pictureTypeId,
                     'name' => $newFileName,
                     'path' => $filePath,
-                    'md5'  => md5_file($filePath),
+                    'md5'  => $imageMd5,
                 ];
                 $pictureList[] = $insertArr;
                 $pictureId = (string)$picture->insertGetId($insertArr);

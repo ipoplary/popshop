@@ -15,7 +15,7 @@ class CreateSkusTable extends Migration
             $table->string('prefix', 10)->unique();
             $table->integer('count');
             $table->softDeletes();
-            $table->timestamps();
+            $table->nullableTimestamps();
         });
     }
 

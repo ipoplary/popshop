@@ -16,8 +16,8 @@ class CreatePicturesTable extends Migration
             $table->string('name', 191)->unique()->nullable();
             $table->string('path', 191)->unique();
             $table->string('md5', 191)->unique();
+            $table->nullableTimestamps();
             $table->softDeletes();
-            $table->timestamps();
         });
     }
 
