@@ -108,9 +108,10 @@ class PictureController extends Controller
     {
         // 存储图片数据的数组
         $pictureList = [];
-        echo '<pre>';
+
         // 事务
-        DB::transaction(function () use($request, $pictureList) {
+        $data = DB::transaction(function () use($request) {
+
             //判断请求中是否包含name=picture的上传文件
             if(!$request->hasFile('files')){
                 exit('上传文件为空！');
@@ -135,33 +136,26 @@ class PictureController extends Controller
                 if(! $image->save($filePath))
                     return response()->json($this->returnData('文件保存失败！'));
 
-                $imageMd5 = md5_file($filePath);
-                // 数据库中若有MD5相同的图片，则删除该图片
-                $isExist = Picture::where('md5', $imageMd5)->first();
-                dd($isExist);
-                if($isExist !== null) {
-                    $pictureList[] = $isExist->toArray();
-                    dd($isExist->all()->toArray());
-                }
-                dd($pictureList);
                 // 保存图片数据到数据库
                 $picture = new Picture;
                 $insertArr = [
                     'type_id' => $pictureTypeId,
                     'name' => $newFileName,
                     'path' => $filePath,
-                    'md5'  => $imageMd5,
                 ];
                 $pictureList[] = $insertArr;
+
                 $pictureId = (string)$picture->insertGetId($insertArr);
                 if(! $pictureId)
-                    return response()->json($this->returnData('上传成功，但添加入数据库失败！'));
+                    return false;
 
             }
-
+            return $pictureList;
         });
 
-        // 成功
-        return response()->json($this->returnData('上传成功！', 1, $pictureList));
+        if($data == false)
+            return response()->json($this->returnData('上传成功，但添加入数据库失败！'));
+        else
+            return response()->json($this->returnData('上传成功！', 1, $data));
     }
 }

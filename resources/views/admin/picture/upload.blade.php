@@ -108,31 +108,17 @@
                 return;
             },
             confirmUpload: function() {
-                // var formData = new FormData($('form')[0]);
-                // $.ajax({
-                //     url: "{{ url('picture/upload') }}",
-                //     type: 'POST',
-                //     xhr: function() {
-                //         myXhr = $.ajaxSettings.xhr();
-                //         if(myXhr.upload){
-                //             myXhr.upload.addEventListener('progress',progressHandlingFunction, false);
-                //         }
-                //         return myXhr;
-                //     },
-                //     success: function() {
-                //     },
-                //     error: function() {
-                //     },
-
-                //     data: formData,
-                // });
 
                 var options = {
                     url:"{{ url('picture/upload') }}",
                     resetForm: true,
                     type: 'POST',
                     dataType:  'json',
-                    success: function() {
+                    success: function(reponse, data) {
+                        if(reponse.err == 1)
+                            $.each(reponse.extra, function(i, item) {
+
+                            })
                     },
                     error: function() {
                     },

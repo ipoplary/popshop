@@ -142,10 +142,6 @@
             });
 
             this.uploadFiles('icon', 'icon', 1);
-
-                console.log(this.uploadIcon);
-            //this.uploadBanner = this.uploadFiles('banner', 'banner', 5);
-            //    console.log(this.uploadBanner);
         },
         methods: {
             uploadFiles: function(id, fileName, maxCount) {
