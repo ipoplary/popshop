@@ -51,6 +51,7 @@
         data: {
             pictureType: null,
             uploadObj: null,
+            pictures: [],
         },
         ready: function() {
             $('#fileuploader').filer({
@@ -117,7 +118,7 @@
                     success: function(reponse, data) {
                         if(reponse.err == 1)
                             $.each(reponse.extra, function(i, item) {
-
+                                uploadVm.pictures.push(item);
                             })
                     },
                     error: function() {

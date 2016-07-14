@@ -50,9 +50,18 @@
         data: {
             type: 0,
             pictures: {!! $pictures !!},
+            extraPictures: uploadVm.pictures,
         },
         ready: function() {
 
+        },
+        watch: {
+            'extraPictures': function(val, oldVal) {
+                console.log(pictures);
+
+                console.log(extraPictures);
+                // vm.pictures.push(val);
+            }
         },
         methods: {
             // 请求图片，返回图片列表数据
