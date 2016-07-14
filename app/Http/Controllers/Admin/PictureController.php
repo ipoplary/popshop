@@ -22,7 +22,6 @@ class PictureController extends Controller
     {
         // 图片列表，倒序排列
         $pictures = Picture::orderBy('id', 'desc')->get(['id', 'name', 'path', 'type_id']);
-
         // 获取图片类型
         foreach($pictures as $v) {
             $v->pictureTypeName = $v->pictureType->name;
@@ -33,7 +32,7 @@ class PictureController extends Controller
         unset($v);
 
         // 图片数据转为json数据
-        $data['pictures'] = json_encode($pictures->keyBy('id')->toArray());
+        $data['pictures'] = json_encode($pictures->toArray());
 
         return view('admin.picture.index', $data);
     }
@@ -132,7 +131,8 @@ class PictureController extends Controller
                 $filePath = 'upload/img/'.$pictureDir.'/'.$newFileName;
 
                 // 上传图片
-                $image  = Image::make($file);
+                $image = Image::make($file);
+
                 if(! $image->save($filePath))
                     return response()->json($this->returnData('文件保存失败！'));
 
@@ -143,9 +143,12 @@ class PictureController extends Controller
                     'name' => $newFileName,
                     'path' => $filePath,
                 ];
-                $pictureList[] = $insertArr;
 
-                $pictureId = (string)$picture->insertGetId($insertArr);
+                $pictureId = (int)$picture->insertGetId($insertArr);
+
+                $pictureList[] = array_merge(['id' => $pictureId, 'url' => asset($filePath)], $insertArr);
+
+
                 if(! $pictureId)
                     return false;
 

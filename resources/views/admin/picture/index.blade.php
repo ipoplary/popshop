@@ -29,9 +29,9 @@
 
             </ul>
 
-            <div class="tab-content col-md-11">
+            <div class="tab-content col-md-12">
                 <ul>
-                    <li class="picture-list" v-for="picture in pictures">
+                    <li class="picture-list" v-for="picture in pictures" data-id="@{{ picture.id }}">
                         <img class="picture-list-img img-responsive" v-bind:src="picture.url" v-bind:alt="picture.name" />
                     </li>
                 </ul>
@@ -57,10 +57,7 @@
         },
         watch: {
             'extraPictures': function(val, oldVal) {
-                console.log(pictures);
-
-                console.log(extraPictures);
-                // vm.pictures.push(val);
+                vm.pictures = vm.extraPictures.concat(vm.pictures);
             }
         },
         methods: {

@@ -39,7 +39,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" v-on:click="confirmUpload">上传</button>
-                <button type="button" class="btn btn-default" v-on:click="cancelUpload">取消</button>
+                <button type="button" class="btn btn-default" v-on:click="reset">取消</button>
             </div>
         </div>
     </div>
@@ -118,7 +118,14 @@
                     success: function(reponse, data) {
                         if(reponse.err == 1)
                             $.each(reponse.extra, function(i, item) {
-                                uploadVm.pictures.push(item);
+                                uploadVm.pictures.unshift(item);
+                                swal({
+                                    title: '操作结果',
+                                    text: '上传成功！',
+                                    type: 'success'
+                                });
+                                uploadVm.reset();
+                                swal()
                             })
                     },
                     error: function() {
@@ -129,7 +136,7 @@
                 $('form').ajaxSubmit(options);
                 return false;
             },
-            cancelUpload: function() {
+            reset: function() {
                 this.pictureType = null;
                 this.uploadObj.reset();
                 this.hide();
