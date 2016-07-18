@@ -38,14 +38,6 @@
                                 <option>Here!</option>
                             </select>
                         </div>
-                        <div class="controls col-sm-1">
-                            <select class="form-control input-xlarge">
-                                <option>Enter</option>
-                                <option>Your</option>
-                                <option>Options</option>
-                                <option>Here!</option>
-                            </select>
-                        </div>
                     </div>
 
                     <div class="form-group">
