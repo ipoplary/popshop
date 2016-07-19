@@ -75,16 +75,18 @@
 
                     if(returnData.err == 1) {
 
-                        return returnData.extra;
+                        return returnData;
 
                     } else {
 
                         swal("出错了！", returnData.msg, "error");
+                        return false;
 
                     }
                 }, function (reponse) {
 
                     swal("出错了！", "数据传输错误", "error");
+                    return false;
                 });
             },
             getPicutures: function(type) {
@@ -92,6 +94,16 @@
             },
             uploadModal: function() {
                 uploadVm.show();
+            },
+            deletePicture: function(id) {
+                var url = "{{ url('picture/destroy') }}";
+                var params = {
+                    id: id
+                };
+                var returnData = this.httpPost(url, params);
+                if(returnData !== false) {
+                    swal("删除图片", returnData.msg, "success");
+                }
             }
         }
     });
