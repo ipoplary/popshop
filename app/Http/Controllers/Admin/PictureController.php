@@ -106,8 +106,6 @@ class PictureController extends Controller
 
     public function postUpload(Request $request)
     {
-        // 存储图片数据的数组
-        $pictureList = [];
 
         // 事务
         $data = DB::transaction(function () use($request) {
@@ -121,6 +119,9 @@ class PictureController extends Controller
             // 获取传过来的图片类别，并将其作为目录名称
             $pictureTypeId = (int)$request->input('type');
             $pictureDir = PictureType::find($pictureTypeId)->dir;
+
+            // 存储图片数据的数组
+            $pictureList = [];
 
             foreach($files as $file) {
                 //判断文件上传过程中是否出错
@@ -141,9 +142,9 @@ class PictureController extends Controller
                 $md5 = md5_file($filePath);
                 $isPicture = Picture::where(['md5' => $md5])->get(['id', 'name', 'path', 'type_id'])->first();
                 if($isPicture) {
-
-                    $pictureList[] = $isPicture->toArray();
-
+                    // 删除图片
+                    unlink($filePath);
+                    $pictureList[] = array_merge($isPicture->toArray(), ['exist' => 1, 'url' => asset($isPicture->path)]);
                 } else {
 
                     // 保存图片数据到数据库
@@ -168,7 +169,7 @@ class PictureController extends Controller
             return $pictureList;
         });
 
-        if($data == false)
+        if($data === false)
             return response()->json($this->returnData('上传成功，但添加入数据库失败！'));
         else
             return response()->json($this->returnData('上传成功！', 1, $data));

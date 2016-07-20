@@ -116,17 +116,23 @@
                     type: 'POST',
                     dataType:  'json',
                     success: function(reponse, data) {
-                        if(reponse.err == 1)
+                        if(reponse.err == 1) {
+                            var isExist = 0;
                             $.each(reponse.extra, function(i, item) {
-                                uploadVm.pictures.unshift(item);
-                                swal({
-                                    title: '操作结果',
-                                    text: '上传成功！',
-                                    type: 'success'
-                                });
-                                uploadVm.reset();
-                                swal()
-                            })
+                                if(item.exist == 1) {
+                                    isExist = 1;
+                                } else {
+                                    uploadVm.pictures.unshift(item);
+                                }
+                            });
+
+                            swal({
+                                title: '操作结果',
+                                text: isExist == 0? '上传成功！' : '上传成功，部分上传的图片已存在！',
+                                type: 'success'
+                            });
+                            uploadVm.reset();
+                        }
                     },
                     error: function() {
                     },
@@ -137,6 +143,7 @@
                 return false;
             },
             reset: function() {
+                uploadVm.pictures = [];
                 this.pictureType = null;
                 this.uploadObj.reset();
                 this.hide();
