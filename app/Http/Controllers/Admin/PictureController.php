@@ -22,6 +22,7 @@ class PictureController extends Controller
     {
         // 图片列表，倒序排列
         $pictures = Picture::orderBy('id', 'desc')->get(['id', 'name', 'path', 'type_id']);
+
         // 获取图片类型
         foreach($pictures as $v) {
             $v->pictureTypeName = $v->pictureType->name;
@@ -136,21 +137,32 @@ class PictureController extends Controller
                 if(! $image->save($filePath))
                     return response()->json($this->returnData('文件保存失败！'));
 
-                // 保存图片数据到数据库
-                $picture = new Picture;
-                $insertArr = [
-                    'type_id' => $pictureTypeId,
-                    'name' => $newFileName,
-                    'path' => $filePath,
-                ];
+                // 获取图片md5并在数据库中查找，若找到数据，则将图片删除，用已存在的返回
+                $md5 = md5_file($filePath);
+                $isPicture = Picture::where(['md5' => $md5])->get(['id', 'name', 'path', 'type_id'])->first();
+                if($isPicture) {
 
-                $pictureId = (int)$picture->insertGetId($insertArr);
+                    $pictureList[] = $isPicture->toArray();
 
-                $pictureList[] = array_merge(['id' => $pictureId, 'url' => asset($filePath)], $insertArr);
+                } else {
+
+                    // 保存图片数据到数据库
+                    $picture = new Picture;
+                    $insertArr = [
+                        'type_id' => $pictureTypeId,
+                        'name' => $newFileName,
+                        'path' => $filePath,
+                        'md5'  => $md5,
+                    ];
+
+                    $pictureId = (int)$picture->insertGetId($insertArr);
+
+                    $pictureList[] = array_merge(['id' => $pictureId, 'url' => asset($filePath)], $insertArr);
 
 
-                if(! $pictureId)
-                    return false;
+                    if(! $pictureId)
+                        return false;
+                }
 
             }
             return $pictureList;
