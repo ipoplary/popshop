@@ -56,7 +56,7 @@
         ready: function() {
             $('#fileuploader').filer({
                 // limit: 3,
-                maxSize: 1,
+                // maxSize: 1,
                 extensions: ['jpg', 'jpeg', 'png', 'gif'],
                 changeInput: true,
                 showThumbs: true,
