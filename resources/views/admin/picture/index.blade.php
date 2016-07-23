@@ -50,15 +50,11 @@
         data: {
             type: 0,
             pictures: {!! $pictures !!},
-            extraPictures: uploadVm.pictures,
         },
         ready: function() {
-
-        },
-        watch: {
-            extraPictures: function(val, oldVal) {
-                vm.pictures = vm.extraPictures.concat(vm.pictures);
-            }
+            uploadVm.$watch("pictures", function() {
+                vm.pictures = uploadVm.pictures.concat(vm.pictures);
+            });
         },
         methods: {
             // 请求图片，返回图片列表数据

@@ -158,8 +158,13 @@ class PictureController extends Controller
 
                     $pictureId = (int)$picture->insertGetId($insertArr);
 
-                    $pictureList[] = array_merge(['id' => $pictureId, 'url' => asset($filePath)], $insertArr);
-
+                    $pictureList[] = [
+                        'id' => $pictureId,
+                        'type_id' => $pictureTypeId,
+                        'name' => $newFileName,
+                        'path' => $filePath,
+                        'url' => asset($filePath),
+                    ];
 
                     if(! $pictureId)
                         return false;

@@ -39,7 +39,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" v-on:click="confirmUpload">上传</button>
-                <button type="button" class="btn btn-default" v-on:click="reset">取消</button>
+                <button type="button" class="btn btn-default" v-on:click="hide">取消</button>
             </div>
         </div>
     </div>
@@ -102,11 +102,13 @@
         },
         methods: {
             show: function() {
+                uploadVm.pictures = [];
                 $('#uploadModal').modal('show');
                 return;
             },
             hide: function() {
                 $('#uploadModal').modal('hide');
+                this.uploadObj.reset();
                 return;
             },
             toggle: function() {
@@ -124,21 +126,21 @@
                         if(reponse.err == 1) {
                             var isExist = 0;
                             $.each(reponse.extra, function(i, item) {
-                                if(item.exist == 1) {
-                                    alert(1);
+
+                                if(typeof(item.exist) != 'undefined' && item.exist == 1) {
                                     isExist = 1;
                                 } else {
                                     uploadVm.pictures.unshift(item);
-                                    alert(2);
                                 }
                             });
+
+                            uploadVm.hide();
 
                             swal({
                                 title: '操作结果',
                                 text: isExist == 0? '上传成功！' : '上传成功，部分上传的图片已存在！',
-                                type: 'success'
+                                type: 'success',
                             });
-                            uploadVm.reset();
                         }
                     },
                     error: function() {
@@ -148,12 +150,6 @@
 
                 $('form').ajaxSubmit(options);
                 return false;
-            },
-            reset: function() {
-                uploadVm.pictures = [];
-                this.pictureType = null;
-                this.uploadObj.reset();
-                this.hide();
             },
         }
     });
