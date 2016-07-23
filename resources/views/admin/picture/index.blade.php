@@ -56,7 +56,7 @@
 
         },
         watch: {
-            'extraPictures': function(val, oldVal) {
+            extraPictures: function(val, oldVal) {
                 vm.pictures = vm.extraPictures.concat(vm.pictures);
             }
         },

@@ -46,6 +46,11 @@
 </div>
 
 <script>
+
+    function removePicture() {
+        $(this).remove();
+    }
+
     var uploadVm = new Vue({
         el: "#uploadModal",
         data: {
@@ -77,7 +82,7 @@
                                         <div class="jFiler-item-assets jFiler-row">\
                                             <ul class="list-inline pull-left"></ul>\
                                             <ul class="list-inline pull-right">\
-                                                <li><a class="icon-jfi-trash jFiler-item-trash-action"></a></li>\
+                                                <li><a class="glyphicon glyphicon-trash jFiler-item-trash-action"></a></li>\
                                             </ul>\
                                         </div>\
                                     </div>\
@@ -120,9 +125,11 @@
                             var isExist = 0;
                             $.each(reponse.extra, function(i, item) {
                                 if(item.exist == 1) {
+                                    alert(1);
                                     isExist = 1;
                                 } else {
                                     uploadVm.pictures.unshift(item);
+                                    alert(2);
                                 }
                             });
 
@@ -147,7 +154,7 @@
                 this.pictureType = null;
                 this.uploadObj.reset();
                 this.hide();
-            }
+            },
         }
     });
 </script>
