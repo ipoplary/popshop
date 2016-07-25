@@ -3,7 +3,7 @@ namespace App\Services;
 
 use App\Models\PictureType;
 
-class PictureService
+class PictureTypeService
 {
 
     /**
@@ -12,6 +12,8 @@ class PictureService
      */
     public function pictureType()
     {
-        return PictureType::get();
+        $pictureTypes = PictureType::get()->keyBy('id')->toArray();
+
+        return $pictureTypes;
     }
 }

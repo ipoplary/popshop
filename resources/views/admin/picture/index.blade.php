@@ -5,7 +5,7 @@
 @section('app', 'picture')
 
 @if(! isset($pictureService))
-    @inject('pictureService', 'App\Services\PictureService')
+    @inject('pictureTypeService', 'App\Services\PictureTypeService')
 @endif
 
 @section('content')
@@ -18,9 +18,9 @@
                     <a href="javaScript:;">所有图片</a>
                 </li>
 
-                @foreach($pictureService->pictureType() as $pictureType)
-                <li v-on:click="getPicutures({{ $pictureType->id }})" v-bind:class="[type == '{{ $pictureType->id }}'? 'active':'']">
-                    <a href="javaScript:;">{{ $pictureType->name }}</a>
+                @foreach($pictureTypeService->pictureType() as $pictureType)
+                <li v-on:click="getPicutures({{ $pictureType['id'] }})" v-bind:class="[type == '{{ $pictureType['id'] }}'? 'active':'']">
+                    <a href="javaScript:;">{{ $pictureType['name'] }}</a>
                 </li>
                 @endforeach
 

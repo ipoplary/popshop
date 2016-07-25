@@ -11,6 +11,11 @@ abstract class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    public function __construct()
+    {
+
+    }
+
     /**
      * 组装json数据的数组
      * @param  integer $err   错误码

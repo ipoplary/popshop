@@ -1,5 +1,5 @@
-@if(! isset($pictureService))
-    @inject('pictureService', 'App\Services\PictureService')
+@if(! isset($pictureTypeService))
+    @inject('pictureTypeService', 'App\Services\pictureTypeService')
 @endif
 
 <div class="modal fade bs-example-modal-lg" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -19,8 +19,8 @@
                         <label class="control-label col-sm-3">图片类别：</label>
                         <div class="controls col-sm-2">
                             <select class="form-control input-xlarge" name="type" v-model="pictureType">
-                                @foreach($pictureService->pictureType() as $v)
-                                <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                @foreach($pictureTypeService->pictureType() as $pictureType)
+                                <option value="{{ $pictureType['id'] }}">{{ $pictureType['name'] }}</option>
                                 @endforeach
                             </select>
                         </div>

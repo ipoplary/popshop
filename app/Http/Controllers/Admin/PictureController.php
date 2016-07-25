@@ -13,6 +13,15 @@ use Image;
 
 class PictureController extends Controller
 {
+    // 首页加载图片数
+    private $pageNum;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->pageNum = 20;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +30,7 @@ class PictureController extends Controller
     public function getIndex()
     {
         // 图片列表，倒序排列
-        $pictures = Picture::orderBy('id', 'desc')->get(['id', 'name', 'path', 'type_id']);
+        $pictures = Picture::orderBy('id', 'desc')->take($this->pageNum)->get(['id', 'name', 'path', 'type_id']);
 
         // 获取图片类型
         foreach($pictures as $v) {
