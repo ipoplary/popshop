@@ -42,7 +42,7 @@ class PictureController extends Controller
         unset($v);
 
         // 图片数据转为json数据
-        $data['pictures'] = json_encode($pictures->toArray());
+        $data['pictures'] = $pictures->toJson();
 
         return view('admin.picture.index', $data);
     }
@@ -187,5 +187,29 @@ class PictureController extends Controller
             return response()->json($this->returnData('上传成功，但添加入数据库失败！'));
         else
             return response()->json($this->returnData('上传成功！', 1, $data));
+    }
+
+    public function postList(Request $request)
+    {
+        $typeId = (int)$request->input('type');
+        $limit  = (int)$request->input('limit');
+        $offset = (int)$request->input('offset');
+
+        $whereArr = [];
+        if($typeId > 0)
+            $whereArr = ['type_id' => $typeId];
+
+        $pictures = Picture::offset($offset)->limit($limit)->where($whereArr)->get(['id', 'name', 'path', 'type_id']);
+
+        // 获取图片类型
+        foreach($pictures as $v) {
+            $v->pictureTypeName = $v->pictureType->name;
+            $v->pictureTypeDir = $v->pictureType->dir;
+            $v->url = asset($v->path);
+            unset($v->pictureType);
+        }
+        unset($v);
+
+        return response()->json($this->returnData('上传成功！', 1, $pictures));
     }
 }

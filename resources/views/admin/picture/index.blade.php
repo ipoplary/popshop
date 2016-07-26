@@ -56,18 +56,18 @@
             this.pictureList[this.type] = {!! $pictures !!};
             this.pictures = this.pictureList[this.type];
             uploadVm.$watch("pictures", function() {
-                vm.pictures[vm.type] = uploadVm.pictures.concat(vm.pictures[vm.type]);
+                vm.pictureList[vm.type] = uploadVm.pictures.concat(vm.pictureList[vm.type]);
             });
         },
         watch: {
-            'type': function() {
+            "type": function() {
                 vm.pictures = [];
                 vm.pictures = vm.pictureList[vm.type];
             },
         },
         methods: {
             // 请求图片，返回图片列表数据
-            httpPost: function (url, params) {
+            httpPost: function (url, params, type) {
                 this.$http.post( url, params, {
                     headers: {
                         "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
@@ -77,10 +77,23 @@
                 }).then( function (reponse) {
 
                     var returnData = reponse.data;
-
                     if(returnData.err == 1) {
 
-                        return returnData;
+                        if(type == 1) {
+                            // 该类别下无数组，则将返回的数据定义为数组值，否则，将返回的数据添加进原有的数组
+                            if(params.offset == 0) {
+
+                                this.pictureList[params.pictureType] = returnData.extra;
+                            } else {
+
+                                this.pictureList[params.pictureType] = this.pictureList[params.pictureType].concat(returnData.extra);
+                            }
+
+                            this.type = params.pictureType;
+
+                        } else if(type == 2) {
+                            swal("删除图片", returnData.msg, "success");
+                        }
 
                     } else {
 
@@ -95,18 +108,24 @@
                 });
             },
             getPicutures: function(type, count) {
-                this.type = type;
-                if(typeof(this.pictureList[this.type]) == 'undefined') {
-                    var url = "{{ url() }}";
-                    var params = {
-                        pictureType: this.type,
-                        count: 20,
-
-                    };
-                    var returnData = this.httpPost(url, params);
-                    if(returnData !== false) {
-                        this.pictureList[this.type] = returnData.extra;
+                // 获取数值为0 或者 该类别下无数组的情况下去获取数据
+                if(count > 0 || typeof(this.pictureList[type]) == 'undefined') {
+                    var offset = 0;
+                    if(typeof(this.pictureList[type]) != 'undefined') {
+                        offset = this.pictureList[type].length;
                     }
+                    var url = "{{ url('picture/list') }}";
+                    var params = {
+                        pictureType: type,
+                        // limit: 20,
+                        // offset: offset,
+                        limit: 3,
+                        offset: 0,
+                    };
+                    var type = 1;
+                    this.httpPost(url, params, type);
+                } else {
+                    this.type = type;
                 }
             },
             uploadModal: function() {
@@ -117,10 +136,8 @@
                 var params = {
                     id: id
                 };
-                var returnData = this.httpPost(url, params);
-                if(returnData !== false) {
-                    swal("删除图片", returnData.msg, "success");
-                }
+                var type = 2;
+                var returnData = this.httpPost(url, params, type);
             }
         }
     });
