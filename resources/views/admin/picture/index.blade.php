@@ -14,12 +14,12 @@
 
             <ul class="nav nav-tabs">
 
-                <li v-on:click="getPicutures(0)" v-bind:class="[type == 0? 'active':'']">
+                <li v-on:click="getPicutures(0, 0)" v-bind:class="[type == 0? 'active':'']">
                     <a href="javaScript:;">所有图片</a>
                 </li>
 
                 @foreach($pictureTypeService->pictureType() as $pictureType)
-                <li v-on:click="getPicutures({{ $pictureType['id'] }})" v-bind:class="[type == '{{ $pictureType['id'] }}'? 'active':'']">
+                <li v-on:click="getPicutures({{ $pictureType['id'] }}, 0)" v-bind:class="[type == '{{ $pictureType['id'] }}'? 'active':'']">
                     <a href="javaScript:;">{{ $pictureType['name'] }}</a>
                 </li>
                 @endforeach
@@ -49,12 +49,21 @@
         el: "#picture",
         data: {
             type: 0,
-            pictures: {!! $pictures !!},
+            pictureList: [],
+            pictures: [],
         },
         ready: function() {
+            this.pictureList[this.type] = {!! $pictures !!};
+            this.pictures = this.pictureList[this.type];
             uploadVm.$watch("pictures", function() {
-                vm.pictures = uploadVm.pictures.concat(vm.pictures);
+                vm.pictures[vm.type] = uploadVm.pictures.concat(vm.pictures[vm.type]);
             });
+        },
+        watch: {
+            'type': function() {
+                vm.pictures = [];
+                vm.pictures = vm.pictureList[vm.type];
+            },
         },
         methods: {
             // 请求图片，返回图片列表数据
@@ -85,8 +94,20 @@
                     return false;
                 });
             },
-            getPicutures: function(type) {
+            getPicutures: function(type, count) {
                 this.type = type;
+                if(typeof(this.pictureList[this.type]) == 'undefined') {
+                    var url = "{{ url() }}";
+                    var params = {
+                        pictureType: this.type,
+                        count: 20,
+
+                    };
+                    var returnData = this.httpPost(url, params);
+                    if(returnData !== false) {
+                        this.pictureList[this.type] = returnData.extra;
+                    }
+                }
             },
             uploadModal: function() {
                 uploadVm.show();
