@@ -117,10 +117,7 @@
                     var url = "{{ url('picture/list') }}";
                     var params = {
                         pictureType: type,
-                        // limit: 20,
-                        // offset: offset,
-                        limit: 3,
-                        offset: 0,
+                        offset: offset,
                     };
                     var type = 1;
                     this.httpPost(url, params, type);

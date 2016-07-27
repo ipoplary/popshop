@@ -191,15 +191,15 @@ class PictureController extends Controller
 
     public function postList(Request $request)
     {
-        $typeId = (int)$request->input('type');
-        $limit  = (int)$request->input('limit');
-        $offset = (int)$request->input('offset');
+        $typeId = (int)$request->input('pictureType');
+        $limit  = $request->input('limit')? (int)$request->input('limit'): $this->pageNum;
+        $offset = $request->input('offset')? (int)$request->input('offset'): 0;
 
         $whereArr = [];
         if($typeId > 0)
             $whereArr = ['type_id' => $typeId];
 
-        $pictures = Picture::offset($offset)->limit($limit)->where($whereArr)->get(['id', 'name', 'path', 'type_id']);
+        $pictures = Picture::orderBy('id', 'desc')->offset($offset)->limit($limit)->where($whereArr)->get(['id', 'name', 'path', 'type_id']);
 
         // 获取图片类型
         foreach($pictures as $v) {
