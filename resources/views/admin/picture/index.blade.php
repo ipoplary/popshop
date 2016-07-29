@@ -33,6 +33,8 @@
                 <ul>
                     <li class="picture-list" v-for="picture in pictures" data-id="@{{ picture.id }}">
                         <img class="picture-list-img img-responsive" v-bind:src="picture.url" v-bind:alt="picture.name" />
+                        <i class="picture-remove glyphicon glyphicon-trash"></i>
+                        <span>@{{ picture.name }}</span>
                     </li>
                 </ul>
             </div>
@@ -57,6 +59,7 @@
             this.pictures = this.pictureList[this.type];
             uploadVm.$watch("pictures", function() {
                 vm.pictureList[vm.type] = uploadVm.pictures.concat(vm.pictureList[vm.type]);
+                vm.pictures = vm.pictureList[vm.type];
             });
         },
         watch: {

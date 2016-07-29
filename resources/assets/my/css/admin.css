@@ -1,15 +1,21 @@
 .btn{
     margin-right: 10px;
 }
-li.picture-list{
+li.picture-list {
     float: left;
     width: 200px;
     border: 1px solid #E7E7EB;
     list-style: none;
-    position: relative;
-    margin: 20px 10px 0 10px;
+    margin: 10px 10px 0 10px;
 }
-img.picture-list-img{
+
+img.picture-list-img {
     width: 100%;
     height: 200px;
+}
+
+i.picture-remove {
+    position: relative;
+    right: 10px;
+    top: 20px;
 }

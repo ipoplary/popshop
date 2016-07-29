@@ -132,13 +132,13 @@ class PictureController extends Controller
             // 存储图片数据的数组
             $pictureList = [];
 
-            foreach($files as $file) {
+            foreach($files as $k => $file) {
                 //判断文件上传过程中是否出错
                 if(! $file->isValid())
                     return response()->json($this->returnData('文件上传失败！'));
 
                 // 重命名图片
-                $newFileName = md5(time().rand(0,10000)).'.'.$file->getClientOriginalExtension();
+                $newFileName = uniqid(date('ymd').$k).'.'.$file->getClientOriginalExtension();
                 $filePath = 'upload/img/'.$pictureDir.'/'.$newFileName;
 
                 // 上传图片
