@@ -1,10 +1,6 @@
-
-!/css/my-admin.css
-!/css/my-home.css
-
-!/css/my-admin.js
-!/css/my-home.js
-
-!/less/admin.less
-
-!/sass/app.scss
+css/*
+js/*
+!less/admin.less
+less/*
+!sass/app.scss
+sass/*
