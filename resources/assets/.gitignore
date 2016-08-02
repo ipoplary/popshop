@@ -1,6 +1,6 @@
-css/*
-js/*
-!less/admin.less
-less/*
-!sass/app.scss
-sass/*
+/css/*
+/js/*
+!/less/admin.less
+/less/*
+!/sass/app.scss
+/sass/*
