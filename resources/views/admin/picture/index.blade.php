@@ -33,7 +33,7 @@
                 <ul>
                     <li class="picture-list" v-for="picture in pictures" data-id="@{{ picture.id }}">
                         <img class="picture-list-img img-responsive" v-bind:src="picture.url" v-bind:alt="picture.name" />
-                        <i class="picture-remove glyphicon glyphicon-trash"></i>
+                        <i class="picture-remove glyphicon glyphicon-trash">删除</i>
                         <span>@{{ picture.name }}</span>
                     </li>
                 </ul>
