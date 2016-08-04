@@ -108,9 +108,29 @@ class PictureController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function postDestroy($id)
     {
-        //
+        $id = (int)$id;
+
+        $picture = Picture::find($id);
+
+        // 图片文件路径
+        $path = $picture->path;
+
+        $result = $picture->destroy($id);
+
+        if($result == 1) {
+            // 数据库删除成功后，删除文件
+            $unlinkResult = unlink($path);
+
+            if(! $unlinkResult)
+                return response()->json($this->returnData('数据库删除成功，文件删除失败！'));
+
+            return response()->json($this->returnData('删除成功！', 1));
+
+        }
+
+        return response()->json($this->returnData('删除失败！'));
     }
 
     public function postUpload(Request $request)

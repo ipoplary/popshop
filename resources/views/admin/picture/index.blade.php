@@ -33,8 +33,8 @@
                 <ul>
                     <li class="picture-list" v-for="picture in pictures" data-id="@{{ picture.id }}">
                         <img class="picture-list-img img-responsive" v-bind:src="picture.url" v-bind:alt="picture.name" />
-                        <i class="picture-remove glyphicon glyphicon-trash">删除</i>
-                        <span>@{{ picture.name }}</span>
+                        <a href="javascript:;" class="picture-remove" v-on:click="deletePicture(picture.id)">删除</a>
+                        <span class="picture-name">@{{ picture.name }}</span>
                     </li>
                 </ul>
             </div>
@@ -95,7 +95,15 @@
                             this.type = params.pictureType;
 
                         } else if(type == 2) {
-                            swal("删除图片", returnData.msg, "success");
+                            swal({
+                                title: '删除图片',
+                                text: returnData.msg,
+                                type: 'success',
+                            },
+                            function(isConfirm) {
+                                window.location.reload();
+                            });
+
                         }
 
                     } else {
@@ -132,12 +140,24 @@
                 uploadVm.show();
             },
             deletePicture: function(id) {
-                var url = "{{ url('picture/destroy') }}";
-                var params = {
-                    id: id
-                };
-                var type = 2;
-                var returnData = this.httpPost(url, params, type);
+                swal({
+                    title: '删除图片？',
+                    text: '确定要删除所选图片？',
+                    type: 'warning',
+                    showCancelButton: true,
+                    closeOnConfirm: true,
+                    confirmButtonText: '确定',
+                    confirmButtonColor: '#ec6c62',
+                    cancelButtonText: '取消',
+                },
+                function(isConfirm) {
+                    if(isConfirm) {
+                        var url = "{{ url('picture/destroy') }}" + '/' + id;
+                        var type = 2;
+                        var returnData = vm.httpPost(url, {}, type);
+                    }
+                });
+                return false;
             }
         }
     });

@@ -3,19 +3,37 @@
 }
 li.picture-list {
     float: left;
+    position: relative;
     width: 200px;
     border: 1px solid #E7E7EB;
     list-style: none;
-    margin: 10px 10px 0 10px;
+    margin: 10px 10px 15px 10px;
 }
 
-img.picture-list-img {
+li.picture-list img.picture-list-img {
     width: 100%;
     height: 200px;
 }
 
-i.picture-remove {
-    position: relative;
-    right: 10px;
-    top: 20px;
+li.picture-list span.picture-name {
+    display: block;
+    line-height: 32px;
+}
+
+li.picture-list a.picture-remove {
+    line-height: 22px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    padding: 0 5px;
+}
+
+.fl{
+    float: left;
+}
+
+.fr{
+    float: right;
 }
