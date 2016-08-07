@@ -3,22 +3,9 @@
 /public/assets
 /public/build
 
-/resources/assets/css
-/resources/assets/js
-
-!/resources/assets/less/admin.less
-/resources/assets/less
-
-!/resources/assets/sass/app.scss
-/resources/assets/sass
-
-!/public/upload/img/product/test1.jpg
-!/public/upload/img/product/test2.jpg
-!/public/upload/img/product/test3.jpg
-!/public/upload/img/product/test4.jpg
-/public/upload/img/product
-
 Homestead.yaml
 Homestead.json
 .env
 .idea
+
+-ide_helper*
