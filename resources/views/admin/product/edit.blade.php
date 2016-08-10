@@ -30,7 +30,7 @@
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">类别</label>
-                        <div class="controls col-sm-1">
+                        <div class="controls col-sm-2">
                             <select class="form-control input-xlarge">
                                 <option>Enter</option>
                                 <option>Your</option>

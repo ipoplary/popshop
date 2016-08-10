@@ -45,7 +45,7 @@
                             </div>
 
                             <div class="col-md-1">
-                                <a class="btn btn-primary" href="{{ url('product/create') }}">新增类别</a>
+                                <a class="btn btn-primary" href="{{ url('product/create') }}">新增商品</a>
                             </div>
 
                             @if($sort == 1)

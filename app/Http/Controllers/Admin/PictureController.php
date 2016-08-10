@@ -140,7 +140,7 @@ class PictureController extends Controller
         $data = DB::transaction(function () use($request) {
 
             //判断请求中是否包含name=picture的上传文件
-            if(!$request->hasFile('files')){
+            if(! $request->hasFile('files')){
                 exit('上传文件为空！');
             }
             $files = $request->file('files');
