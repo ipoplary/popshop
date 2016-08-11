@@ -9,3 +9,6 @@ Homestead.json
 .idea
 .phpstorm*
 _ide_helper*
+npm-debug.log
+phpspec.yml
+phpunit.xml
