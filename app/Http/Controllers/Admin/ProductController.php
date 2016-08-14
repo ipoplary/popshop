@@ -115,7 +115,7 @@ class ProductController extends Controller
     public function postStore(Request $request)
     {
         // 事务
-        DB::transaction(function() {
+        DB::transaction(function() use($request) {
             $product = new Product;
             $product->name         = $request->input('name');
             $product->sku          = $request->input('sku');
