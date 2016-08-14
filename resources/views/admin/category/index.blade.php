@@ -21,11 +21,14 @@
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
                                     <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href=" {{ url('category/index').'/-1' }} "> 所有类别 </a>
+                                        <a role="menuitem" tabindex="-1" href=" {{ url('category/index/-1') }} "> 所有类别 </a>
+                                    </li>
+                                    <li role="presentation">
+                                        <a role="menuitem" tabindex="-1" href=" {{ url('category/index/0') }} "> 父类别 </a>
                                     </li>
                                 @foreach ($parents as $parent)
                                     <li role="presentation">
-                                        <a role="menuitem" tabindex="-1" href=" {{ url('category/index').'/'.$parent['id'] }} "> {{ $parent['name_all'] or $parent['name'] }} </a>
+                                        <a role="menuitem" tabindex="-2" href=" {{ url('category/index/' . $parent['id']) }} "> &nbsp;&nbsp;{{ $parent['name_all'] or $parent['name'] }} </a>
                                     </li>
                                 @endforeach
                                 </ul>
@@ -33,10 +36,6 @@
 
                             <div class="col-md-1">
                                 <button type="button" class="btn btn-primary" v-on:click="addModal">新增类别</button>
-                            </div>
-
-                            <div class="col-md-1">
-                                <a type="button" class="btn btn-success" href="{{ url('category/index/0') }}">父类别</a>
                             </div>
 
                             @if($parentId != '-1')

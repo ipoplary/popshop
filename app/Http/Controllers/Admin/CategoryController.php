@@ -26,7 +26,8 @@ class CategoryController extends Controller
 
         $data['parents'] = Category::where('parent_id', 0)->orderBy('sort')->get();
 
-        $parentId = (int) $parentId;
+        $parentId = (int)$parentId;
+
         // 获取分页信息
         if ($parentId < 0) {
             $cate = Category::where('parent_id', '!=', 0)->orderBy('parent_id')->orderBy('sort')->paginate($this->pageNum);
@@ -36,9 +37,9 @@ class CategoryController extends Controller
         }
 
         // 关联父类信息
-        if ($parentId > 0) {
+        if ($parentId != 0) {
             foreach ($cate->getCollection() as &$v) {
-                $v->parentName = $v->parent->name;
+                $v->parentName = $v->getParent->name;
             }
         }
 

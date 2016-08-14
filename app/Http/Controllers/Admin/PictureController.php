@@ -34,10 +34,10 @@ class PictureController extends Controller
 
         // 获取图片类型
         foreach($pictures as $v) {
-            $v->pictureTypeName = $v->pictureType->name;
-            $v->pictureTypeDir = $v->pictureType->dir;
+            $v->pictureTypeName = $v->getPictureType->name;
+            $v->pictureTypeDir = $v->getPictureType->dir;
             $v->url = asset($v->path);
-            unset($v->pictureType);
+            unset($v->getPictureType);
         }
         unset($v);
 
@@ -223,10 +223,10 @@ class PictureController extends Controller
 
         // 获取图片类型
         foreach($pictures as $v) {
-            $v->pictureTypeName = $v->pictureType->name;
-            $v->pictureTypeDir = $v->pictureType->dir;
+            $v->pictureTypeName = $v->getPictureType->name;
+            $v->pictureTypeDir = $v->getPictureType->dir;
             $v->url = asset($v->path);
-            unset($v->pictureType);
+            unset($v->getPictureType);
         }
         unset($v);
 

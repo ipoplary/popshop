@@ -11,8 +11,8 @@ class Product extends Model
 
     protected $dates = ['deleted_at'];
 
-    public function category()
+    public function getCategory()
     {
-        return $this->belongsTo('App\Models\Category');
+        return $this->belongsTo('App\Models\Category', 'category_id');
     }
 }

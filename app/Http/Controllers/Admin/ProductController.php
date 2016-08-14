@@ -52,7 +52,7 @@ class ProductController extends Controller
                 // 类别为父类别时，获取父类别的所有子类别下的商品
                 $data['parentId'] = $data['categoryId'];
 
-                $chidren = $category->children->keyBy('id');
+                $chidren = $category->getChildren->keyBy('id');
 
                 $whereIn = $chidren->keys()->toArray();
 
@@ -80,7 +80,8 @@ class ProductController extends Controller
             $data['products'] = $data['products']->paginate($this->pageNum);
 
             foreach ($data['products']->items() as &$v) {
-                $v->categoryName = $v->category->name;
+
+                $v->categoryName = $v->getCategory->name;
             }
         }
 
@@ -165,7 +166,7 @@ class ProductController extends Controller
     {
         // 商品详细信息
         $data['product'] = Product::find($id);
-        $data['product']->categoryName = $data['product']->category->name;
+        $data['product']->categoryName = $data['product']->getCategory->name;
 
         // 获取sku
         $sku = SKU::where('prefix', $this->prefix)->first();
@@ -191,13 +192,13 @@ class ProductController extends Controller
     {
         // 更新商品：将原有的商品存为快照，重新建一个商品
         // 事务
-        DB::transaction(function() {
+        DB::transaction(function() use($request, $id){
             $oldProduct = Product::find($id);
             if (! $oldProduct)
                 return response()->json($this->returnData('找不到商品！'));
 
             $oldProduct->snapshot = 1;
-            $oldResult = $oldProduct->save();
+            $oldProduct->save();
 
             $product = new Product;
             $product->name         = $request->input('name');

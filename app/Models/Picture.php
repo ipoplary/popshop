@@ -11,7 +11,7 @@ class Picture extends Model
 
     protected $dates = ['deleted_at'];
 
-    public function PictureType()
+    public function getPictureType()
     {
         return $this->belongsTo('App\Models\PictureType', 'type_id', 'id');
     }
