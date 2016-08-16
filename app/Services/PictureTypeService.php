@@ -8,11 +8,11 @@ class PictureTypeService
 
     /**
      * 获取图片类别
-     * @return object 图片类别collection
+     * @return array 图片类别collection
      */
     public function pictureType()
     {
-        $pictureTypes = PictureType::get()->keyBy('id')->toArray();
+        $pictureTypes = PictureType::get()->keyBy('id');
 
         return $pictureTypes;
     }

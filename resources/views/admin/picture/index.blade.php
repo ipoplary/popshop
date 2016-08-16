@@ -63,7 +63,7 @@
             });
         },
         watch: {
-            "type": function() {
+            type: function() {
                 vm.pictures = [];
                 vm.pictures = vm.pictureList[vm.type];
             },

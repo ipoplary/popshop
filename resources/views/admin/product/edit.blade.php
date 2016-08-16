@@ -4,6 +4,11 @@
 
 @section('app', 'product')
 
+{{-- 注入类别服务类 --}}
+@if(! isset($categoryService))
+    @inject('categoryService', 'App\Services\CategoryService')
+@endif
+
 @section('content')
 
     <div class="row" id="app">
@@ -30,12 +35,16 @@
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">类别</label>
-                        <div class="controls col-sm-2">
-                            <select class="form-control input-xlarge">
-                                <option>Enter</option>
-                                <option>Your</option>
-                                <option>Options</option>
-                                <option>Here!</option>
+                        <div class="controls col-sm-1">
+                            <select class="form-control input-xlarge" v-model="parentCategory">
+                                @foreach($categoryService->parentCategory() as $parentCategory):
+                                    <option value="{{ $parentCategory->id }}">{{ $parentCategory->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="controls col-sm-1">
+                            <select class="form-control input-xlarge" v-model="category">
+                                <option v-for="child in showChildren" value="@{{ child['id'] }}">@{{ child['name'] }}</option>
                             </select>
                         </div>
                     </div>
@@ -69,23 +78,11 @@
                     </div>
 
                     <div class="form-group">
-                        <!-- Textarea -->
-                        <label class="control-label col-sm-2">商品详情</label>
-                        <div class="controls col-sm-6">
-                            <div id="desc"></div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
                         <label class="control-label col-sm-2">商品图片</label>
 
                         <!-- File Upload -->
                         <div class="controls col-sm-1">
-                            <div id="icon"></div>
-                            <div id="image-banner"></div>
-                            <div class="col-sm-1">
-                                <button class="btn btn-primary" v-on:click="startUpload(1)">上传</button>
-                            </div>
+                            <button class="btn btn-warning">选择图片</button>
                         </div>
                     </div>
 
@@ -93,11 +90,15 @@
                         <label class="control-label col-sm-2">商品轮播图</label>
                         <!-- File Upload -->
                         <div class="controls col-sm-1">
-                            <div id="banner"></div>
-                            <div id="image-banner"></div>
-                            <div class="col-sm-1">
-                                <button class="btn btn-primary" v-on:click="startUpload(2)">上传</button>
-                            </div>
+                            <button class="btn btn-success">选择图片</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <!-- Textarea -->
+                        <label class="control-label col-sm-2">商品详情</label>
+                        <div class="controls col-sm-6">
+                            <div id="desc"></div>
                         </div>
                     </div>
 
@@ -121,8 +122,10 @@
         data: {
             name: "{{ $name or '' }}",
             sku: "{{ $sku }}",
-            uploadIcon: '',
-            uploadBanner: '',
+            parentCategory: '',
+            category: '',
+            childrenList: [],
+            showChildren: [],
         },
         ready: function() {
             // 编辑器
@@ -132,68 +135,14 @@
                 maxHeight: null,
                 focus: false
             });
-
-            this.uploadFiles('icon', 'icon', 1);
+        },
+        watch: {
+            parentCategory: function() {
+                vm.showChildren = [];
+                vm.getChildren(vm.parentCategory);
+            },
         },
         methods: {
-            uploadFiles: function(id, fileName, maxCount) {
-                // 上传图片
-                var upload = $("#" + id).uploadFile({
-                    url: "{{ url('upload/image') }}",
-                    fileName: fileName,
-                    returnType: 'json',
-                    autoSubmit: false,
-                    dragDrop: false,
-                    accept: "image/*",
-                    showPreview: true,
-                    previewWidth: '50%',
-                    maxFileCount: maxCount,
-                    showFileSize: true,
-                    dynamicFormData: function() {
-                        var data = {
-                            'dir': 'product',
-                            '_token': "{{ csrf_token() }}"
-                        };
-                        return data;
-                    },
-                    showStatusAfterSuccess: false,
-                    allowedTypes: "jpg,png,gif,jpeg",
-                    onSuccess: function(files,data,xhr,pd) {
-                        alert(1);
-
-                        console.log(files,data,xhr,pd);
-                        return true;
-                        vm.image = data.extra.picId;
-                        vm.imageUrl = data.extra.url;
-                        var imgHtml = '<img data-id="' + vm.image + '" src="' + vm.imageUrl + '" class="icon"/>';
-                        $("#image").html(imgHtml);
-                    },
-                    onError: function(files,status,errMsg,pd) {
-                        alert(2);
-                        console.log(files,status,errMsg,pd);
-                        return true;
-                    },
-                    afterUploadAll:function(obj)
-                    {
-                        alert(3);
-                    }
-
-                });
-                if(id == 'icon')
-                    this.uploadIcon = upload;
-                else
-                    this.uploadBanner = upload;
-                console.log(this.uploadIcon);
-                return;
-            },
-            startUpload: function(type) {
-                alert(typeof(this.uploadIcon));
-                console.log(this.uploadIcon);
-                if(type == 1)
-                    this.uploadIcon.startUpload();
-                else if(type == 2)
-                    this.uploadBanner.startUpload();
-            },
             httpPost: function(url, params, type) {
                 this.$http.post( url, params, {
                     headers: {
@@ -211,18 +160,6 @@
                             vm.childrenList[params.id] = returnData.extra;
 
                             vm.showChildren = this.childrenList[params.id];
-                        } else if(type == 'delete' || type == 'sort') {
-                            swal({
-                                title: '操作结果',
-                                text: returnData.msg,
-                                type: "success"
-                            },
-                            function(isConfirm) {
-                                if (isConfirm) {
-                                    $("#modal").modal('hide');
-                                    window.location.reload();
-                                }
-                            });
                         }
 
                     } else {
@@ -234,6 +171,21 @@
 
                     swal("出错了！", "数据传输错误", "error");
                 });
+            },
+            getChildren: function(id) {
+                {{-- 若不存在父类的子类，获取其的子类列表，并存到数组中 --}}
+                if(typeof(this.childrenList[id]) === 'undefined') {
+                    var url = "{{ url('category/children') }}";
+                    var params = {
+                        'id': id
+                    };
+                    var type = "getChildrenList";
+
+                    this.httpPost(url, params, type);
+                } else {
+                    this.showChildren = this.childrenList[id];
+                }
+
             },
         }
     });
