@@ -47,10 +47,6 @@
 
 <script>
 
-    function removePicture() {
-        $(this).remove();
-    }
-
     var uploadVm = new Vue({
         el: "#uploadModal",
         data: {

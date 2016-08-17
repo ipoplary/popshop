@@ -13,7 +13,7 @@
 
     <div class="row" id="app">
         <div class="col-md-12">
-            <form class="form-horizontal">
+            <div class="form-horizontal">
                 <fieldset>
                     <div>
                         <legend class="">添加商品</legend>
@@ -79,18 +79,15 @@
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品图片</label>
-
-                        <!-- File Upload -->
                         <div class="controls col-sm-1">
-                            <button class="btn btn-warning">选择图片</button>
+                            <button class="btn btn-warning" v-on:click="selectImage(1)">选择图片</button>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品轮播图</label>
-                        <!-- File Upload -->
                         <div class="controls col-sm-1">
-                            <button class="btn btn-success">选择图片</button>
+                            <button class="btn btn-success" v-on:click="selectImage(2)">选择图片</button>
                         </div>
                     </div>
 
@@ -109,13 +106,16 @@
                         </div>
                     </div>
                 </fieldset>
-            </form>
+            </div>
         </div>
     </div>
 
 @endsection
 
 @section('script')
+
+@include('admin.picture.select')
+
 <script>
     var vm = new Vue({
         el: "#app",
@@ -187,6 +187,10 @@
                 }
 
             },
+            selectImage: function(id) {
+                selectVm.show();
+                return false;
+            }
         }
     });
 </script>
