@@ -1,5 +1,5 @@
 @if(! isset($pictureTypeService))
-    @inject('pictureTypeService', 'App\Services\pictureTypeService')
+    @inject('pictureTypeService', 'App\Services\PictureTypeService')
 @endif
 
 <div class="modal fade bs-example-modal-lg" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

@@ -35,14 +35,14 @@
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">类别</label>
-                        <div class="controls col-sm-1">
+                        <div class="controls col-sm-2">
                             <select class="form-control input-xlarge" v-model="parentCategory">
                                 @foreach($categoryService->parentCategory() as $parentCategory):
                                     <option value="{{ $parentCategory->id }}">{{ $parentCategory->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="controls col-sm-1">
+                        <div class="controls col-sm-2">
                             <select class="form-control input-xlarge" v-model="category">
                                 <option v-for="child in showChildren" value="@{{ child['id'] }}">@{{ child['name'] }}</option>
                             </select>
@@ -188,7 +188,7 @@
 
             },
             selectImage: function(id) {
-                selectVm.show();
+                selectVm.show(1, 1);
                 return false;
             }
         }
