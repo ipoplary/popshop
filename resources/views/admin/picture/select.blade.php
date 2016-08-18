@@ -10,6 +10,11 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">选择图片</h4>
+                @foreach($pictureTypeService->pictureType() as $pictureType)
+                    <li v-on:click="getPicutures({{ $pictureType['id'] }}, 0)" v-bind:class="[type == '{{ $pictureType['id'] }}'? 'active':'']">
+                        <a href="javaScript:;">{{ $pictureType['name'] }}</a>
+                    </li>
+                @endforeach
             </div>
 
             <div class="modal-footer">
