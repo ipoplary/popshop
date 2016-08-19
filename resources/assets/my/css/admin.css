@@ -37,3 +37,8 @@ li.picture-list a.picture-remove {
 .fr{
     float: right;
 }
+
+/*超大模态框 modal*/
+.modal-xlg {
+    width: 1500px;
+}

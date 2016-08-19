@@ -3,7 +3,7 @@
 @endif
 
 <div class="modal fade bs-example-modal-lg" id="selectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xlg" role="document">
 
         <div class="modal-content">
 
@@ -26,8 +26,10 @@
                 <div class="tab-content col-md-12">
                     <ul>
                         <li class="picture-list" v-for="picture in pictures" data-id="@{{ picture.id }}">
-                            <img class="picture-list-img img-responsive" v-bind:src="picture.url" v-bind:alt="picture.name" />
-                            <a href="javascript:;" class="picture-remove" v-on:click="deletePicture(picture.id)">删除</a>
+                            <div>
+                                <img class="picture-list-img img-responsive" v-bind:src="picture.url" v-bind:alt="picture.name" />
+                            </div>
+                            {{-- <a href="javascript:;" class="picture-remove" v-on:click="deletePicture(picture.id)">删除</a> --}}
                             <span class="picture-name">@{{ picture.name }}</span>
                         </li>
                     </ul>
@@ -47,9 +49,14 @@
     var selectVm = new Vue({
         el: "#selectModal",
         data: {
-            pictureList: [],
+            // 图片类型
             pictureType: "",
+            // 获取的图片列表
+            pictureList: [],
+            // 显示的图片
             pictures: [],
+            // 所选图片
+            selectPictures: [],
         },
         ready: function() {
 
@@ -72,6 +79,7 @@
                     if(returnData.err == 1) {
 
                         if(type == 1) {
+                            // type为1，获取图片数据
                             // 该类别下无数组，则将返回的数据定义为数组值，否则，将返回的数据添加进原有的数组
                             if(params.offset == 0) {
 
@@ -84,16 +92,6 @@
                             this.pictureType = params.pictureType;
 
                             this.pictures = this.pictureList[this.pictureType];
-
-                        } else if(type == 2) {
-                            swal({
-                                title: '删除图片',
-                                text: returnData.msg,
-                                type: 'success',
-                            },
-                            function(isConfirm) {
-                                window.location.reload();
-                            });
 
                         }
 
