@@ -17,6 +17,7 @@
                         <a href="javaScript:;">所有图片</a>
                     </li>
 
+                    {{-- 图片类型列表 --}}
                     @foreach($pictureTypeService->pictureType() as $pictureType)
                         <li v-on:click="getPicutures({{ $pictureType['id'] }}, 0)" v-bind:class="[pictureType == '{{ $pictureType['id'] }}'? 'active':'']">
                             <a href="javaScript:;">{{ $pictureType['name'] }}</a>
@@ -26,16 +27,16 @@
                 <div class="tab-content col-md-12">
                     <ul>
                         <li class="picture-list" v-for="picture in pictures" data-id="@{{ picture.id }}">
-                            <div>
-                                <img class="picture-list-img img-responsive" v-bind:src="picture.url" v-bind:alt="picture.name" />
+                            <div v-on:click="selectPicture(picture.id)">
+                                {{-- 图片列表 --}}
+                                <img class="picture-list-img" v-bind:src="picture.url" v-bind:alt="picture.name" />
+                                {{-- <a href="javascript:;" class="picture-remove" v-on:click="deletePicture(picture.id)">删除</a> --}}
+                                <span class="picture-name">@{{ picture.name }}</span>
                             </div>
-                            {{-- <a href="javascript:;" class="picture-remove" v-on:click="deletePicture(picture.id)">删除</a> --}}
-                            <span class="picture-name">@{{ picture.name }}</span>
                         </li>
                     </ul>
                 </div>
             </div>
-
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" v-on:click="confirm">确定</button>
@@ -49,14 +50,10 @@
     var selectVm = new Vue({
         el: "#selectModal",
         data: {
-            // 图片类型
-            pictureType: "",
-            // 获取的图片列表
-            pictureList: [],
-            // 显示的图片
-            pictures: [],
-            // 所选图片
-            selectPictures: [],
+            pictureType: "",  {{-- 图片类型 --}}
+            pictureList: [],  {{-- 获取的图片列表 --}}
+            pictures: [],  {{-- 显示的图片 --}}
+            selectPictures: [],  {{-- 所选图片 --}}
         },
         ready: function() {
 
@@ -65,7 +62,7 @@
 
         },
         methods: {
-            // 请求图片，返回图片列表数据
+            {{-- post请求 --}}
             httpPost: function (url, params, type) {
                 this.$http.post( url, params, {
                     headers: {
@@ -79,8 +76,7 @@
                     if(returnData.err == 1) {
 
                         if(type == 1) {
-                            // type为1，获取图片数据
-                            // 该类别下无数组，则将返回的数据定义为数组值，否则，将返回的数据添加进原有的数组
+                            {{-- type为1，获取图片数据。该类别下无数组，则将返回的数据定义为数组值，否则，将返回的数据添加进原有的数组 --}}
                             if(params.offset == 0) {
 
                                 this.pictureList[params.pictureType] = returnData.extra;
@@ -107,24 +103,34 @@
                     return false;
                 });
             },
+            {{-- 打开模态框 --}}
             show: function(source, pictureType) {
-
+                {{-- source:
+                    1:商品图片
+                    2:商品轮播图
+                    3:
+                    4:
+                    5:
+                 --}}
                 this.pictureType = pictureType;
 
-                this.getPicutures(this.pictureType, 10);
+                this.getPicutures(pictureType, 10);
 
                 $('#selectModal').modal('show');
                 return;
             },
+            {{-- 隐藏模态框 --}}
             hide: function() {
                 $('#selectModal').modal('hide');
                 return;
             },
+            {{-- 确认选取的图片 --}}
             confirm: function() {
                 return;
             },
+            {{-- 从服务端获取图片数据 --}}
             getPicutures: function(type, count) {
-                // 获取数值为0 或者 该类别下无数组的情况下去获取数据
+                {{-- 获取数值为0 或者 该类别下无数组的情况下去获取数据 --}}
                 if(count > 0 || typeof(this.pictureList[type]) == 'undefined') {
                     var offset = 0;
                     if(typeof(this.pictureList[type]) != 'undefined') {
@@ -132,8 +138,9 @@
                     }
                     var url = "{{ url('picture/list') }}";
                     var params = {
-                        pictureType: type,
-                        offset: offset,
+                        pictureType: type,  {{-- 图片类型 --}}
+                        offset: offset,  {{-- 偏移量 --}}
+                        count: count,  {{-- 获取数量 --}}
                     };
                     var type = 1;
                     this.httpPost(url, params, type);

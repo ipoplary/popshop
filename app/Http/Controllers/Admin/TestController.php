@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Storage;
-use Response;
 
 class TestController extends Controller
 {
@@ -16,15 +14,9 @@ class TestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getIndex()
+    public function index()
     {
-        echo md5_file(public_path('upload/product/test1.jpg'));
-        echo '<br/>';
-        echo md5_file(public_path('upload/product/test2.jpg'));
-        echo '<br/>';
-        echo md5_file(public_path('upload/product/test3.jpg'));
-        echo '<br/>';
-        echo md5_file(public_path('upload/product/test4.jpg'));
+        //
     }
 
     /**

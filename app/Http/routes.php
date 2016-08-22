@@ -21,7 +21,7 @@ Route::group(['namespace' => 'Admin', 'domain' => env('ADMIN_URL', 'admin.popsho
 
         Route::get('logout', 'AuthController@getLogout');
 
-        Route::controller('test', 'TestController');
+        // Route::controller('test', 'TestController');
         Route::group(['middleware' => 'auth'], function() {
 
             Route::controller('home', 'HomeController');

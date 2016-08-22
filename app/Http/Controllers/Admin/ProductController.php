@@ -20,6 +20,7 @@ class ProductController extends Controller
         $this->pageNum = 10;
         $this->prefix = 'SKU';
     }
+
     /**
      * Display a listing of the resource.
      *
