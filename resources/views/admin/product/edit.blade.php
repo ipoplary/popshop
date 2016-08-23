@@ -188,7 +188,7 @@
 
             },
             selectImage: function(id) {
-                selectVm.show(1, 1);
+                selectVm.show(id, 1);
                 return false;
             }
         }

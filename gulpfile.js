@@ -97,6 +97,11 @@ gulp.task("copyfiles", function() {
     gulp.src("vendor/bower_dl/jquery.filer/css/jquery.filer.css")
         .pipe(gulp.dest('resources/assets/css/'));
 
+    // img
+    gulp.src("resources/assets/my/img/**")
+        .pipe(gulp.dest('public/build/assets/img/'));
+
+
 });
 
 // 修改文件内容

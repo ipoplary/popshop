@@ -26,13 +26,14 @@
                 </ul>
                 <div class="tab-content col-md-12">
                     <ul>
-                        <li class="picture-list" v-for="picture in pictures" data-id="@{{ picture.id }}">
-                            <div v-on:click="selectPicture(picture.id)">
+                        <li class="picture-list" v-for="(index, picture) in pictures" data-id="@{{ picture.id }}">
+                            <div class="picture-box" v-on:click="selectPicture(index, picture.id)">
                                 {{-- 图片列表 --}}
+                                <div v-bind:class="['picture-mask']"></div>
                                 <img class="picture-list-img" v-bind:src="picture.url" v-bind:alt="picture.name" />
-                                {{-- <a href="javascript:;" class="picture-remove" v-on:click="deletePicture(picture.id)">删除</a> --}}
-                                <span class="picture-name">@{{ picture.name }}</span>
                             </div>
+                            {{-- <a href="javascript:;" class="picture-remove" v-on:click="deletePicture(picture.id)">删除</a> --}}
+                            <span class="picture-name">@{{ picture.name }}</span>
                         </li>
                     </ul>
                 </div>
@@ -50,10 +51,11 @@
     var selectVm = new Vue({
         el: "#selectModal",
         data: {
+            source: "",  {{-- 选择的来源 --}}
             pictureType: "",  {{-- 图片类型 --}}
             pictureList: [],  {{-- 获取的图片列表 --}}
             pictures: [],  {{-- 显示的图片 --}}
-            selectPictures: [],  {{-- 所选图片 --}}
+            selectPictures: {},  {{-- 所选图片 --}}
         },
         ready: function() {
 
@@ -62,6 +64,7 @@
 
         },
         methods: {
+
             {{-- post请求 --}}
             httpPost: function (url, params, type) {
                 this.$http.post( url, params, {
@@ -103,7 +106,8 @@
                     return false;
                 });
             },
-            {{-- 打开模态框 --}}
+
+            {{-- 打开图片选择模态框 --}}
             show: function(source, pictureType) {
                 {{-- source:
                     1:商品图片
@@ -112,22 +116,43 @@
                     4:
                     5:
                  --}}
-                this.pictureType = pictureType;
 
+                {{-- 判断是否存在已选的数组，若数组不存在，则初始化一个空数组 --}}
+                if(typeof(this.selectPictures[source]) == 'undefined')
+                    this.selectPictures[source] = [];
+
+                {{-- 来源改变时，所选图片应随之进行改变 --}}
+                if(this.source != source) {
+
+                    {{-- 删去已选属性 --}}
+                    $("li.picture-list").find("div.picture-mask").removeClass('checked');
+
+                    {{-- 根据数组添加新的已选 --}}
+                    $.each(this.selectPictures[source], function(i, id) {
+                        $("li[data-id='" + id + "']").find("div.picture-mask").addClass("checked");
+                    });
+                }
+
+                this.source = source;
+                this.pictureType = pictureType;
                 this.getPicutures(pictureType, 10);
 
                 $('#selectModal').modal('show');
                 return;
             },
+
             {{-- 隐藏模态框 --}}
             hide: function() {
                 $('#selectModal').modal('hide');
                 return;
             },
+
             {{-- 确认选取的图片 --}}
             confirm: function() {
+                this.hide();
                 return;
             },
+
             {{-- 从服务端获取图片数据 --}}
             getPicutures: function(type, count) {
                 {{-- 获取数值为0 或者 该类别下无数组的情况下去获取数据 --}}
@@ -146,6 +171,26 @@
                     this.httpPost(url, params, type);
                 } else {
                     this.pictureType = type;
+                }
+            },
+
+            {{-- 选择图片 --}}
+            selectPicture: function(index, id) {
+                var item = $("li[data-id='" + id + "']").find("div.picture-mask");
+                var arr = this.selectPictures[this.source];
+
+                if($.inArray(id, arr) == '-1'){
+                    {{-- 添加元素 --}}
+                    arr.push(id);
+                    item.addClass("checked");
+                }else {
+                    {{-- 删除元素 --}}
+                    $.each(arr, function(i, item) {
+                        if(item == id){
+                            arr.splice(i, 1);
+                        }
+                    });
+                    item.removeClass("checked");
                 }
             },
         }
