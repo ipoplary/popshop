@@ -21,14 +21,14 @@
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品名</label>
-                        <div class="controls col-sm-3">
-                            <input type="text" class="form-control">
+                        <div class="controls col-sm-4">
+                            <input type="text" class="form-control" v-model="name">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">SKU</label>
-                        <div class="controls col-sm-3">
+                        <div class="controls col-sm-4">
                             <input type="text" class="form-control" disabled="disabled" v-model="sku">
                         </div>
                     </div>
@@ -51,29 +51,29 @@
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">原价格</label>
-                        <div class="controls col-sm-3">
-                            <input type="text" class="form-control">
+                        <div class="controls col-sm-4">
+                            <input type="text" class="form-control" v-model="originalPrice">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">优惠价格</label>
-                        <div class="controls col-sm-3">
-                            <input type="text" class="form-control">
+                        <div class="controls col-sm-4">
+                            <input type="text" class="form-control" v-model="discountPrice">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品库存</label>
-                        <div class="controls col-sm-3">
-                            <input type="text" class="form-control">
+                        <div class="controls col-sm-4">
+                            <input type="text" class="form-control" v-model="stock">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品简介</label>
-                        <div class="controls col-sm-3">
-                            <input type="text" class="form-control">
+                        <div class="controls col-sm-4">
+                            <input type="text" class="form-control" v-model="intro">
                         </div>
                     </div>
 
@@ -85,9 +85,41 @@
                     </div>
 
                     <div class="form-group">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            {{-- 图标 --}}
+                            <ul v-if="icon">
+                                <li class="picture-list">
+                                    <div class="picture-box">
+                                        {{-- 图片列表 --}}
+                                        <img class="picture-list-img" v-bind:src="icon.url" v-bind:alt="icon.name" />
+                                    </div>
+                                    <span class="picture-name">@{{ icon.name }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="control-label col-sm-2">商品轮播图</label>
                         <div class="controls col-sm-1">
                             <button class="btn btn-success" v-on:click="selectImage(2)">选择图片</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            {{-- 轮播图 --}}
+                            <ul v-if="banners">
+                                <li class="picture-list" v-for="banner in banners">
+                                    <div class="picture-box">
+                                        {{-- 轮播图列表 --}}
+                                        <img class="picture-list-img" v-bind:src="banner.url" v-bind:alt="banner.name" />
+                                    </div>
+                                    <span class="picture-name">@{{ banner.name }}</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
 
@@ -102,7 +134,7 @@
                     <div class="form-group">
                         <div class="col-sm-2"></div>
                         <div class="controls col-sm-3">
-                            <input type="button" class="btn btn-primary" value="提交">
+                            <input v-on:click="confirm" type="button" class="btn btn-primary" value="提交">
                         </div>
                     </div>
                 </fieldset>
@@ -120,10 +152,20 @@
     var vm = new Vue({
         el: "#app",
         data: {
+            {{-- 字段 --}}
             name: "{{ $name or '' }}",
             sku: "{{ $sku }}",
-            parentCategory: '',
-            category: '',
+            parentCategory: "",
+            category: "",
+            originalPrice: "",
+            discountPrice: "",
+            stock: "",
+            intro: "",
+            icon: "",
+            banners: "",
+            desc: "",
+            {{-- End 字段 --}}
+            type: "add",
             childrenList: [],
             showChildren: [],
         },
@@ -160,6 +202,8 @@
                             vm.childrenList[params.id] = returnData.extra;
 
                             vm.showChildren = this.childrenList[params.id];
+                        } else if(type == "") {
+
                         }
 
                     } else {
@@ -187,11 +231,40 @@
                 }
 
             },
-            selectImage: function(id) {
-                selectVm.show(id, 1);
+            selectImage: function(source) {
+                var pictureType = 1;
+                var limit = 1;
+                if(source == 2)
+                    limit = 5;
+                var selectPictures = [];
+
+                {{-- source:来源(图标或轮播图)
+                     pictureType:图片类型(产品)
+                     limit:限制数量(最多可选)
+                     selectPictures:已选的图片(用于编辑页面非新增页面)
+                --}}
+
+                var options = {
+                    source: source,
+                    pictureType: pictureType,
+                    limit: limit,
+                    selectPictures: selectPictures,
+                }
+                selectVm.show(options);
                 return false;
-            }
+            },
+            confirm: function() {
+
+            },
         }
+    });
+
+    selectVm.$watch('selectPictures', function() {
+        {{-- 图片列表更改，显示到页面上 --}}
+        if(selectVm.source == 1)
+            vm.icon = selectVm.selectPictures[0];
+        else
+            vm.banners = selectVm.selectPictures;
     });
 </script>
 @endsection

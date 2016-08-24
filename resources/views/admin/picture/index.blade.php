@@ -57,10 +57,6 @@
         ready: function() {
             this.pictureList[this.type] = {!! $pictures !!};
             this.pictures = this.pictureList[this.type];
-            uploadVm.$watch("pictures", function() {
-                vm.pictureList[vm.type] = uploadVm.pictures.concat(vm.pictureList[vm.type]);
-                vm.pictures = vm.pictureList[vm.type];
-            });
         },
         watch: {
             type: function() {
@@ -160,6 +156,11 @@
                 return false;
             }
         }
+    });
+
+    uploadVm.$watch("pictures", function() {
+        vm.pictureList[vm.type] = uploadVm.pictures.concat(vm.pictureList[vm.type]);
+        vm.pictures = vm.pictureList[vm.type];
     });
 
 </script>
