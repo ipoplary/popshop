@@ -110,31 +110,46 @@
                 this.pictureType = options.pictureType;
                 this.limit = options.limit;
 
+                {{-- 获取图片 --}}
+                this.getPicutures(this.pictureType, 10);
+
                 if(typeof(options.selectPictures) == 'undefined')
                     options.selectPictures = [];
 
                 {{-- 判断是否存在已选的数组，若数组不存在，则初始化一个空数组 --}}
-                if(typeof(this.selectPictureList[source]) == 'undefined')
+                if(typeof(this.selectPictureList[source]) == 'undefined') {
                     this.selectPictureList[source] = [];
-
-                {{-- 来源改变时，所选图片应随之进行改变 --}}
-                if(this.source != source) {
-
-                    {{-- 删去已选属性 --}}
-                    $("li.picture-list").find("div.picture-mask").removeClass('checked');
-
-                    {{-- 根据数组添加新的已选 --}}
-                    $.each(this.selectPictureList[source], function(i, item) {
-                        $("li[data-id='" + item.id + "']").find("div.picture-mask").addClass("checked");
-                    });
                 }
 
-                this.source = source;
-                this.getPicutures(this.pictureType, 10);
-                this.selectPictures = this.selectPictureList[this.source];
+                {{-- 将已选的图片加到数组中 --}}
+                $.each(options.selectPictures, function(i, item) {
+                    selectVm.selectPictureList[source].push(item);
+                });
 
                 $('#selectModal').modal('show');
+
+                this.source = source;
+
+                {{-- 来源改变时，所选图片应随之进行改变 --}}
+                this.selectPictures = this.selectPictureList[this.source];
+                if(this.source != source || typeof(this.selectPictureList[source]) != 'undefined') {
+                    this.check(source);
+                }
+
                 return;
+            },
+
+            {{-- 勾选已选的图片 --}}
+            check: function(source) {
+                alert(2.5);
+                {{-- 删去已选属性 --}}
+                $("li.picture-list").find("div.picture-mask").removeClass('checked');
+
+                {{-- 根据数组添加新的已选 --}}
+                $.each(this.selectPictureList[source], function(i, item) {
+                    alert(item.id);
+                    $("li[data-id='" + item.id + "']").find("div.picture-mask").addClass("checked");
+                });
             },
 
             {{-- 隐藏模态框 --}}

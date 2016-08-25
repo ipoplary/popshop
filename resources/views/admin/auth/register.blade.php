@@ -1,6 +1,6 @@
 @extends('admin.auth.layout')
 
-@section('title', 'Register')
+@section('title', '注册')
 
 @section('content')
     <div class="register-box">
@@ -9,27 +9,27 @@
         </div>
 
         <div class="register-box-body">
-            <p class="login-box-msg">Register a new admin</p>
+            <p class="login-box-msg">注册管理账户</p>
 
-            {!! Form::open(['url' => 'register']) !!}
+            <form method="POST" action="{{ url('register') }}">
 
                 <div class="form-group has-feedback">
-                    {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Name']) !!}
+                    <input class="form-control" placeholder="账号" name="name" type="text">
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
                 </div>
 
                 <div class="form-group has-feedback">
-                    {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => 'Email']) !!}
+                    <input class="form-control" placeholder="邮箱" name="email" type="email">
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 </div>
 
                 <div class="form-group has-feedback">
-                    {!! Form::password('password', ['class' => 'form-control', 'placeholder' => 'Password']) !!}
+                    <input class="form-control" placeholder="密码" name="password" type="password">
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
 
                 <div class="form-group has-feedback">
-                    {!! Form::password('password_confirmation', ['class' => 'form-control', 'placeholder' => 'Retype password']) !!}
+                    <input class="form-control" placeholder="重复密码" name="password_confirmation" type="password">
                     <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
                 </div>
 
@@ -38,14 +38,14 @@
                     </div>
 
                     <div class="col-xs-4">
-                        {!! Form::submit('Register', ['class' => 'btn btn-primary btn-block btn-flat']) !!}
+                        <input class="btn btn-primary btn-block btn-flat" type="submit" value="确认">
                     </div>
 
                 </div>
 
-            {!! Form::close() !!}
+            </form>
 
-            <a href="{{ url('login') }}" class="text-center">I already have a membership</a>
+            <a href="{{ url('login') }}" class="text-center">已有账号，跳至登录</a>
         </div>
         {{-- /.form-box --}}
 

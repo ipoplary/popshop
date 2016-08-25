@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Sku;
+use App\Services\PictureService;
 use DB;
 
 class ProductController extends Controller
@@ -103,6 +104,7 @@ class ProductController extends Controller
 
         // 所有父类别
         $data['parents'] = Category::where('parent_id', 0)->get();
+        $data['type'] = 'add';
 
         return view('admin.product.edit', $data);
     }
@@ -116,8 +118,19 @@ class ProductController extends Controller
      */
     public function postStore(Request $request)
     {
+        // 验证请求的信息
+        $this->validateInfo($request);
+
+        // 若sku已存在，添加失败
+        $isSkuExsist = Product::where('sku', $request->input('sku'))->count();
+        if($isSkuExsist > 0)
+            return response()->json($this->returnData('添加商品失败，该SKU已存在！'));
+
         // 事务
         DB::transaction(function() use($request) {
+            // banner数组转为json
+            $banner = json_encode($request->input('banner'));
+
             $product = new Product;
             $product->name         = $request->input('name');
             $product->sku          = $request->input('sku');
@@ -126,22 +139,23 @@ class ProductController extends Controller
             $product->dsc_price    = $request->input('dsc_price');
             $product->stock        = $request->input('stock');
             $product->introduction = $request->input('introduction');
-            $product->description  = $request->input('description');
+            $product->description  = htmlentities($request->input('description'));
             $product->icon_id      = $request->input('icon_id');
-            $product->banner       = $request->input('banner');
+            $product->banner       = $banner;
+
+            // 商品排序默认为0，显示在最上
+            $product->sort         = 0;
 
             $result = $product->save();
 
             // 数据库中sku值+1
-            $sku = SKU::where('prefix', $this->prefix)->get();
+            $sku = SKU::where('prefix', $this->prefix)->first();
             $sku->count += 1;
             $sku->save();
 
-            return response()->json($this->returnData('添加商品成功！', 1));
         });
 
-        return response()->json($this->returnData('添加商品失败！'));
-
+        return response()->json($this->returnData('添加商品成功！', 1));
     }
 
     /**
@@ -167,15 +181,20 @@ class ProductController extends Controller
     {
         // 商品详细信息
         $data['product'] = Product::find($id);
-        $data['product']->categoryName = $data['product']->getCategory->name;
 
-        // 获取sku
-        $sku = SKU::where('prefix', $this->prefix)->first();
+        // 父类别
+        $data['product']->parentCategory = Category::find($data['product']->category_id)->parent_id;
 
-        $data['sku'] = $this->prefix . sprintf('%05s', (string)$sku->count);
+        // 描述字段格式化
+        $data['product']->description = html_entity_decode($data['product']->description);
+
+        // 图标及banner处理
+        $data['product']->iconDetail = json_encode(PictureService::detailBatch([$data['product']->icon_id], ['id', 'name', 'url']));
+        $data['product']->bannerDetail = json_encode(PictureService::detailBatch(json_decode($data['product']->banner), ['id', 'name', 'url']));
 
         // 所有父类别
         $data['parents'] = Category::where('parent_id', 0)->get();
+        $data['type'] = 'edit';
 
         return view('admin.product.edit', $data);
 
@@ -248,9 +267,13 @@ class ProductController extends Controller
             return response()->json($this->returnData('删除成功！', 1));
     }
 
+    /**
+     * 排序操作
+     * @param  Request $request 请求数据
+     * @return json             排序结果
+     */
     public function postSort(Request $request)
     {
-
         $sortArr = $request->input('sort');
         $i = 1;
         foreach ($sortArr as $v) {
@@ -261,5 +284,27 @@ class ProductController extends Controller
         }
 
         return response()->json($this->returnData('排序成功！', 1));
+    }
+
+    /**
+     * 验证输入的产品信息
+     * @param  Request $request 请求数据
+     * @return void
+     */
+    private function validateInfo(Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required|max:50',
+            'sku'=> 'required',
+            'category_id'=> 'required|integer',
+            'org_price'=> 'numeric|min:0',
+            'dsc_price'=> 'required|numeric|min:0',
+            'stock'=> 'required|integer|min:0',
+            'introduction'=> 'required|string',
+            'description'=> 'required',
+            'icon_id'=> 'required|integer',
+            'banner'=> 'required',
+        ]);
+        return;
     }
 }

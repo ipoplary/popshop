@@ -84,7 +84,7 @@
                                     <td> {{ $product->categoryName or '无父类别' }} </td>
                                     <td>
 
-                                        <button type="button" class="btn btn-success btn-sm glyphicon glyphicon-edit" v-on:click="editModal({{ $product->id }}, '{{ $product->sku }}', {{ $product->name }})"> 编辑</button>
+                                        <a type="button" class="btn btn-success btn-sm glyphicon glyphicon-edit" href="{{ url('product/edit/'.$product->id) }}"> 编辑</a>
 
                                         <button type="button" class="btn btn-danger btn-sm glyphicon glyphicon-remove" v-on:click="deleteCate({{ $product->id }})"> 删除</button>
                                     </td>

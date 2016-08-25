@@ -51,28 +51,28 @@
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">原价格</label>
-                        <div class="controls col-sm-4">
+                        <div class="controls col-sm-1">
                             <input type="text" class="form-control" v-model="originalPrice">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">优惠价格</label>
-                        <div class="controls col-sm-4">
+                        <div class="controls col-sm-1">
                             <input type="text" class="form-control" v-model="discountPrice">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品库存</label>
-                        <div class="controls col-sm-4">
+                        <div class="controls col-sm-1">
                             <input type="text" class="form-control" v-model="stock">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品简介</label>
-                        <div class="controls col-sm-4">
+                        <div class="controls col-sm-6">
                             <input type="text" class="form-control" v-model="intro">
                         </div>
                     </div>
@@ -153,19 +153,19 @@
         el: "#app",
         data: {
             {{-- 字段 --}}
-            name: "{{ $name or '' }}",
-            sku: "{{ $sku }}",
-            parentCategory: "",
-            category: "",
-            originalPrice: "",
-            discountPrice: "",
-            stock: "",
-            intro: "",
+            name: "{{ $product->name or '' }}",
+            sku: "{{ $product->sku or $sku }}",
+            parentCategory: "{{ $product->parentCategory or '' }}",
+            category: "{{ $product->category_id or '' }}",
+            originalPrice: "{{ $product->org_price or '' }}",
+            discountPrice: "{{ $product->dsc_price or '' }}",
+            stock: "{{ $product->stock or '' }}",
+            intro: "{{ $product->introduction or '' }}",
             icon: "",
             banners: "",
             desc: "",
             {{-- End 字段 --}}
-            type: "add",
+            type: "{{ $type }}",
             childrenList: [],
             showChildren: [],
         },
@@ -177,6 +177,14 @@
                 maxHeight: null,
                 focus: false
             });
+            if(this.type == 'edit') {
+                // 获取父类的子类别
+                this.showChildren = [];
+                this.getChildren(this.parentCategory);
+
+                // 描述文本
+                $("#desc").summernote('code', '{!! $product->description !!}');
+            }
         },
         watch: {
             parentCategory: function() {
@@ -202,8 +210,15 @@
                             vm.childrenList[params.id] = returnData.extra;
 
                             vm.showChildren = this.childrenList[params.id];
-                        } else if(type == "") {
-
+                        } else if(type == 'add') {
+                            swal({
+                                title: '添加商品',
+                                text: returnData.msg,
+                                type: 'success',
+                            },
+                            function(isConfirm) {
+                                window.location.href = "{{ url('product?category=') }}" + vm.category;
+                            });
                         }
 
                     } else {
@@ -237,6 +252,13 @@
                 if(source == 2)
                     limit = 5;
                 var selectPictures = [];
+                if(this.type == 'edit') {
+                    if(source == 1) {
+                        selectPictures = {!! $product->iconDetail !!};
+                    } else {
+                        selectPictures = {!! $product->bannerDetail !!};
+                    }
+                }
 
                 {{-- source:来源(图标或轮播图)
                      pictureType:图片类型(产品)
@@ -254,7 +276,31 @@
                 return false;
             },
             confirm: function() {
+                if(this.type == 'add') {
+                    var url = "{{ url('product/store') }}";
+                } else if(this.type == 'edit') {
+                    var url = "{{ url('product/update') }}";
+                }
+                var icon_id = this.icon.id;
+                var banner = [];
+                $.each(this.banners, function(i, item) {
+                    banner.push(item.id);
+                });
+                var description = $('#desc').summernote('code');
 
+                var params = {
+                    name: this.name,
+                    sku: this.sku,
+                    category_id: this.category,
+                    org_price: this.originalPrice,
+                    dsc_price: this.discountPrice,
+                    stock: this.stock,
+                    introduction: this.intro,
+                    description: description,
+                    icon_id: icon_id,
+                    banner: banner
+                };
+                this.httpPost(url, params, this.type);
             },
         }
     });

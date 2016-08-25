@@ -52,7 +52,8 @@ return [
     |
     */
 
-    'locale' => 'en',
+    // 'locale' => 'en',
+    'locale' => 'zh-CN',
 
     /*
     |--------------------------------------------------------------------------
@@ -134,7 +135,7 @@ return [
         Illuminate\Redis\RedisServiceProvider::class,
         Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
         Illuminate\Session\SessionServiceProvider::class,
-        Illuminate\Translation\TranslationServiceProvider::class,
+        // Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
@@ -146,10 +147,10 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        Collective\Html\HtmlServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        Overtrue\LaravelLang\TranslationServiceProvider::class,
 
     ],
 
@@ -199,8 +200,6 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
 
-        'Form'      => Collective\Html\FormFacade::class,
-        'Html'      => Collective\Html\HtmlFacade::class,
         'Debugbar'  => Barryvdh\Debugbar\Facade::class,
         'Image'     => Intervention\Image\Facades\Image::class,
 
