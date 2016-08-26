@@ -80,7 +80,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品图片</label>
                         <div class="controls col-sm-1">
-                            <button class="btn btn-warning" v-on:click="selectImage(1)">选择图片</button>
+                            <button class="btn btn-warning" v-on:click="selectImage('icon')">选择图片</button>
                         </div>
                     </div>
 
@@ -103,7 +103,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-2">商品轮播图</label>
                         <div class="controls col-sm-1">
-                            <button class="btn btn-success" v-on:click="selectImage(2)">选择图片</button>
+                            <button class="btn btn-success" v-on:click="selectImage('banner')">选择图片</button>
                         </div>
                     </div>
 
@@ -169,7 +169,19 @@
             childrenList: [],
             showChildren: [],
         },
+        created: function() {
+
+
+            selectVm.$watch('selectPictures', function() {
+                {{-- 图片列表更改，显示到页面上 --}}
+                if(selectVm.source == 'icon')
+                    vm.icon = selectVm.selectPictureList['icon'][0];
+                else
+                    vm.banners = selectVm.selectPictureList['banner'];
+            });
+        },
         ready: function() {
+
             // 编辑器
             $('#desc').summernote({
                 height: 200,
@@ -177,14 +189,23 @@
                 maxHeight: null,
                 focus: false
             });
-            if(this.type == 'edit') {
+
+            @if($type == 'edit')
                 // 获取父类的子类别
                 this.showChildren = [];
                 this.getChildren(this.parentCategory);
 
                 // 描述文本
                 $("#desc").summernote('code', '{!! $product->description !!}');
-            }
+
+                // 图标，轮播图
+                selectVm.initSelect('icon', {!! $product->iconDetail !!});
+                selectVm.initSelect('banner', {!! $product->bannerDetail !!});
+
+                this.icon = selectVm.selectPictureList['icon'][0];
+                this.banners = selectVm.selectPictureList['banner'];
+            @endif
+
         },
         watch: {
             parentCategory: function() {
@@ -219,6 +240,15 @@
                             function(isConfirm) {
                                 window.location.href = "{{ url('product?category=') }}" + vm.category;
                             });
+                        } else if(type == 'edit') {
+                            swal({
+                                title: '更新商品',
+                                text: returnData.msg,
+                                type: 'success',
+                            },
+                            function(isConfirm) {
+                                window.location.href = "{{ url('product/edit') }}" + '/' + returnData.extra.id;
+                            });
                         }
 
                     } else {
@@ -249,16 +279,17 @@
             selectImage: function(source) {
                 var pictureType = 1;
                 var limit = 1;
-                if(source == 2)
+                if(source == 'banner')
                     limit = 5;
                 var selectPictures = [];
-                if(this.type == 'edit') {
-                    if(source == 1) {
+
+                @if($type == 'edit')
+                    if(source == 'icon') {
                         selectPictures = {!! $product->iconDetail !!};
                     } else {
                         selectPictures = {!! $product->bannerDetail !!};
                     }
-                }
+                @endif
 
                 {{-- source:来源(图标或轮播图)
                      pictureType:图片类型(产品)
@@ -276,11 +307,12 @@
                 return false;
             },
             confirm: function() {
-                if(this.type == 'add') {
+                @if($type == 'edit')
+                    var url = "{{ url('product/update/' . $product->id) }}";
+                @else
                     var url = "{{ url('product/store') }}";
-                } else if(this.type == 'edit') {
-                    var url = "{{ url('product/update') }}";
-                }
+                @endif
+
                 var icon_id = this.icon.id;
                 var banner = [];
                 $.each(this.banners, function(i, item) {
@@ -303,14 +335,6 @@
                 this.httpPost(url, params, this.type);
             },
         }
-    });
-
-    selectVm.$watch('selectPictures', function() {
-        {{-- 图片列表更改，显示到页面上 --}}
-        if(selectVm.source == 1)
-            vm.icon = selectVm.selectPictures[0];
-        else
-            vm.banners = selectVm.selectPictures;
     });
 </script>
 @endsection

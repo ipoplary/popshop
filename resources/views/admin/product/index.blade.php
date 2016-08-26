@@ -72,7 +72,7 @@
                             </thead>
                             <tbody v-sortable="{ handle: '.handle' }" id="sort">
                             @foreach ($products->items() as $product)
-                                <tr class="odd gradeX sort-id" data-id="{{ $product->id }}" v-bind:class="{'warning': '{{ $product->snapshot==1 }}'}">
+                                <tr class="odd gradeX sort-id" data-id="{{ $product->sku }}" v-bind:class="{'warning': '{{ $product->snapshot==1 }}'}">
                                     <td> {{ $product->id }} </td>
                                     <td> {{ $product->sku }} </td>
                                     <td>
@@ -86,7 +86,7 @@
 
                                         <a type="button" class="btn btn-success btn-sm glyphicon glyphicon-edit" href="{{ url('product/edit/'.$product->id) }}"> 编辑</a>
 
-                                        <button type="button" class="btn btn-danger btn-sm glyphicon glyphicon-remove" v-on:click="deleteCate({{ $product->id }})"> 删除</button>
+                                        <button type="button" class="btn btn-danger btn-sm glyphicon glyphicon-remove" v-on:click="delete({{ $product->id }})"> 删除</button>
                                     </td>
 
                                     @if($sort == 1)
@@ -177,10 +177,10 @@
                     swal("出错了！", "数据传输错误", "error");
                 });
             },
-            deleteCate: function(id) {
+            delete: function(id) {
 
                 swal({
-                    title: "删除类别",
+                    title: "删除商品",
                     text: "确定删除？",
                     type: "warning",
                     showCancelButton: true,

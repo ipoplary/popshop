@@ -87,6 +87,11 @@ class ProductController extends Controller
             }
         }
 
+        if($data['snapshot'] == 1) {
+            // 有快照不排序
+            $data['sort'] = 0;
+        }
+
         return view('admin.product.index', $data);
     }
 
@@ -211,14 +216,26 @@ class ProductController extends Controller
     public function postUpdate(Request $request, $id)
     {
         // 更新商品：将原有的商品存为快照，重新建一个商品
+
+        // 验证请求的信息
+        $this->validateInfo($request);
+
+        // 若sku不存在，更新失败
+        $isSkuExsist = Product::where('sku', $request->input('sku'))->count();
+        if($isSkuExsist < 0)
+            return response()->json($this->returnData('更新商品失败，该SKU不存在！'));
+
         // 事务
-        DB::transaction(function() use($request, $id){
+        $productId = DB::transaction(function() use($request, $id){
             $oldProduct = Product::find($id);
             if (! $oldProduct)
                 return response()->json($this->returnData('找不到商品！'));
 
             $oldProduct->snapshot = 1;
             $oldProduct->save();
+
+            // banner数组转为json
+            $banner = json_encode($request->input('banner'));
 
             $product = new Product;
             $product->name         = $request->input('name');
@@ -228,20 +245,19 @@ class ProductController extends Controller
             $product->dsc_price    = $request->input('dsc_price');
             $product->stock        = $request->input('stock');
             $product->introduction = $request->input('introduction');
-            $product->description  = $request->input('description');
+            $product->description  = htmlentities($request->input('description'));
             $product->icon_id      = $request->input('icon_id');
-            $product->banner       = $request->input('banner');
+            $product->banner       = $banner;
+
+            // 商品排序默认为0，显示在最上
+            $product->sort         = $oldProduct->sort;
 
             $result = $product->save();
+            return $product->id;
 
-            // 数据库中sku值+1
-            $sku = SKU::where('prefix', $this->prefix)->get();
-            $sku->count += 1;
-            $sku->save();
-
-            return response()->json($this->returnData('修改商品成功，原有商品改为快照！', 1));
         });
-        return response()->json($this->returnData('修改商品失败！'));
+        return response()->json($this->returnData('修改商品成功，原有商品改为快照！', 1, ['id' => $productId]));
+        // return response()->json($this->returnData('修改商品失败！'));
     }
 
     /**
@@ -277,10 +293,8 @@ class ProductController extends Controller
         $sortArr = $request->input('sort');
         $i = 1;
         foreach ($sortArr as $v) {
-            $product[$i] = Product::find($v);
-            $product[$i]->sort = $i;
-            $product[$i]->save();
-            ++$i;
+            Product::where('sku', $v)->update(['sort' => $i]);
+            $i++;
         }
 
         return response()->json($this->returnData('排序成功！', 1));

@@ -36,6 +36,7 @@ class PictureService
      */
     public static function detailBatch($ids, $field = [])
     {
+
         $picturesDetail = [];
         foreach($ids as $v) {
             $picturesDetail[] = self::detail($v, $field);

@@ -29,7 +29,7 @@
                         <li class="picture-list" v-for="(index, picture) in pictures" data-id="@{{ picture.id }}">
                             <div class="picture-box" v-on:click="selectPicture(index, picture.id, picture.url, picture.name)">
                                 {{-- 图片列表 --}}
-                                <div v-bind:class="['picture-mask']"></div>
+                                <div v-bind:class="['picture-mask', (picture.checked == 1)? 'checked':'']"></div>
                                 <img class="picture-list-img" v-bind:src="picture.url" v-bind:alt="picture.name" />
                             </div>
                             {{-- <a href="javascript:;" class="picture-remove" v-on:click="deletePicture(picture.id)">删除</a> --}}
@@ -62,7 +62,7 @@
         methods: {
 
             {{-- post请求 --}}
-            httpPost: function (url, params, type) {
+            httpPost: function (url, params, type, callback) {
                 this.$http.post( url, params, {
                     headers: {
                         "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
@@ -87,6 +87,12 @@
 
                             this.pictures = this.pictureList[this.pictureType];
 
+                            {{-- 所有图片选中值设为0 --}}
+                            $.each(this.pictures, function(i, item) {
+                                item.checked = 0;
+                            });
+
+                            callback();
                         }
 
                     } else {
@@ -104,6 +110,10 @@
 
             {{-- 打开图片选择模态框 --}}
             show: function(options) {
+                {{-- 所有图片选中值设为0 --}}
+                $.each(this.pictures, function(i, item) {
+                    item.checked = 0;
+                });
 
                 {{-- source: {1: 商品图片, 2: 商品轮播图, 3: ...} --}}
                 source = options.source;
@@ -111,44 +121,48 @@
                 this.limit = options.limit;
 
                 {{-- 获取图片 --}}
-                this.getPicutures(this.pictureType, 10);
+                this.getPicutures(this.pictureType, 10, function() {
 
-                if(typeof(options.selectPictures) == 'undefined')
-                    options.selectPictures = [];
 
-                {{-- 判断是否存在已选的数组，若数组不存在，则初始化一个空数组 --}}
-                if(typeof(this.selectPictureList[source]) == 'undefined') {
-                    this.selectPictureList[source] = [];
-                }
+                    {{-- 判断是否存在已选的数组，若数组不存在，则初始化一个空数组 --}}
+                    if(typeof(selectVm.selectPictureList[source]) == 'undefined') {
+                        selectVm.selectPictureList[source] = [];
+                    }
 
-                {{-- 将已选的图片加到数组中 --}}
-                $.each(options.selectPictures, function(i, item) {
-                    selectVm.selectPictureList[source].push(item);
+                    {{-- 来源改变时，所选图片应随之进行改变 --}}
+                    selectVm.selectPictures = selectVm.selectPictureList[source];
+
+                    $('#selectModal').modal('show');
+
+                    if(selectVm.source != source || typeof(selectVm.selectPictureList[source]) != 'undefined') {
+
+                        selectVm.check(source);
+                    }
+
+                    selectVm.source = source;
+
+                    return;
                 });
+            },
 
-                $('#selectModal').modal('show');
-
-                this.source = source;
-
-                {{-- 来源改变时，所选图片应随之进行改变 --}}
-                this.selectPictures = this.selectPictureList[this.source];
-                if(this.source != source || typeof(this.selectPictureList[source]) != 'undefined') {
-                    this.check(source);
-                }
-
-                return;
+            {{-- 初始化已选图片 --}}
+            initSelect: function(source, selectPictures) {
+                this.selectPictureList[source] = selectPictures;
             },
 
             {{-- 勾选已选的图片 --}}
             check: function(source) {
-                alert(2.5);
-                {{-- 删去已选属性 --}}
-                $("li.picture-list").find("div.picture-mask").removeClass('checked');
+                var select = [];
+                $.each(this.selectPictures, function(i, item) {
+                    select.push(item.id);
+                });
 
                 {{-- 根据数组添加新的已选 --}}
-                $.each(this.selectPictureList[source], function(i, item) {
-                    alert(item.id);
-                    $("li[data-id='" + item.id + "']").find("div.picture-mask").addClass("checked");
+                $.each(this.pictures, function(i, item) {
+
+                    if(select.indexOf(item.id) >= 0) {
+                        item.checked = 1;
+                    }
                 });
             },
 
@@ -173,7 +187,7 @@
             },
 
             {{-- 从服务端获取图片数据 --}}
-            getPicutures: function(type, count) {
+            getPicutures: function(type, count, callback) {
                 {{-- 获取数值为0 或者 该类别下无数组的情况下去获取数据 --}}
                 if(count > 0 || typeof(this.pictureList[type]) == 'undefined') {
                     var offset = 0;
@@ -187,7 +201,7 @@
                         count: count,  {{-- 获取数量 --}}
                     };
                     var type = 1;
-                    this.httpPost(url, params, type);
+                    this.httpPost(url, params, type, callback);
                 } else {
                     this.pictureType = type;
                 }
@@ -195,20 +209,21 @@
 
             {{-- 选择图片 --}}
             selectPicture: function(index, id, url, name) {
-                var item = $("li[data-id='" + id + "']").find("div.picture-mask");
+                var dom = $("li[data-id='" + id + "']").find("div.picture-mask");
                 var arr = this.selectPictureList[this.source];
                 var data = {
                     id: id,
                     url: url,
                     name: name
                 }
+
                 {{-- 是否已选 --}}
                 var isSelected = 0;
                 $.each(arr, function(i, item) {
 
                     if(id == item.id){
                         isSelected = 1;
-                        return;
+                        return false;
                     }
 
                 });
@@ -221,15 +236,18 @@
 
                     {{-- 添加元素 --}}
                     arr.push(data);
-                    item.addClass("checked");
+                    dom.addClass("checked");
+
                 }else {
                     {{-- 删除元素 --}}
                     $.each(arr, function(i, item) {
                         if(item.id == id){
                             arr.splice(i, 1);
+                            return false;
                         }
                     });
-                    item.removeClass("checked");
+
+                    dom.removeClass("checked");
                 }
             },
         }
