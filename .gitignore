@@ -8,6 +8,7 @@ Homestead.json
 .env
 .idea
 .phpstorm*
+popshop.sublime-project
 _ide_helper*
 npm-debug.log
 phpspec.yml
