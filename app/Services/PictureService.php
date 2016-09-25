@@ -38,6 +38,10 @@ class PictureService
     {
 
         $picturesDetail = [];
+
+        if(! is_array($ids) || empty($ids))
+            return $picturesDetail;
+        
         foreach($ids as $v) {
             $picturesDetail[] = self::detail($v, $field);
         }

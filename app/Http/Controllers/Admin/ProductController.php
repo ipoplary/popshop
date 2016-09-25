@@ -195,7 +195,8 @@ class ProductController extends Controller
 
         // 图标及banner处理
         $data['product']->iconDetail = json_encode(PictureService::detailBatch([$data['product']->icon_id], ['id', 'name', 'url']));
-        $data['product']->bannerDetail = json_encode(PictureService::detailBatch(json_decode($data['product']->banner), ['id', 'name', 'url']));
+        
+        $data['product']->bannerDetail = json_encode(PictureService::detailBatch(json_decode($data['product']->banner, true), ['id', 'name', 'url']));
 
         // 所有父类别
         $data['parents'] = Category::where('parent_id', 0)->get();
