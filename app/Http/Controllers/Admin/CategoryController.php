@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -26,7 +26,7 @@ class CategoryController extends Controller
 
         $data['parents'] = Category::where('parent_id', 0)->orderBy('sort')->get();
 
-        $parentId = (int)$parentId;
+        $parentId = (int) $parentId;
 
         // 获取分页信息
         if ($parentId < 0) {
@@ -181,6 +181,7 @@ class CategoryController extends Controller
     {
         $categoryId = $request->input('id');
         $children = Category::where('parent_id', $categoryId)->get()->toArray();
+
         return response()->json($this->returnData('获取成功！', 1, $children));
     }
 }

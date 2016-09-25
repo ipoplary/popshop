@@ -1,13 +1,14 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\Category;
 
 class CategoryService
 {
-
     /**
-     * 获取父类别
+     * 获取父类别.
+     *
      * @return object 父类别
      */
     public function parentCategory()

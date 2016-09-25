@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Picture;
 use App\Models\PictureType;
 use DB;
+use Illuminate\Http\Request;
 use Image;
 
 class PictureController extends Controller
@@ -33,7 +31,7 @@ class PictureController extends Controller
         $pictures = Picture::orderBy('id', 'desc')->take($this->pageNum)->get(['id', 'name', 'path', 'type_id']);
 
         // 获取图片类型
-        foreach($pictures as $v) {
+        foreach ($pictures as $v) {
             $v->pictureTypeName = $v->getPictureType->name;
             $v->pictureTypeDir = $v->getPictureType->dir;
             $v->url = asset($v->path);
@@ -60,7 +58,8 @@ class PictureController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -71,7 +70,8 @@ class PictureController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -82,7 +82,8 @@ class PictureController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -93,8 +94,9 @@ class PictureController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -105,12 +107,13 @@ class PictureController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function postDestroy($id)
     {
-        $id = (int)$id;
+        $id = (int) $id;
 
         $picture = Picture::find($id);
 
@@ -119,15 +122,15 @@ class PictureController extends Controller
 
         $result = $picture->destroy($id);
 
-        if($result == 1) {
+        if ($result == 1) {
             // 数据库删除成功后，删除文件
             $unlinkResult = unlink($path);
 
-            if(! $unlinkResult)
+            if (!$unlinkResult) {
                 return response()->json($this->returnData('数据库删除成功，文件删除失败！'));
+            }
 
             return response()->json($this->returnData('删除成功！', 1));
-
         }
 
         return response()->json($this->returnData('删除失败！'));
@@ -137,25 +140,26 @@ class PictureController extends Controller
     {
 
         // 事务
-        $data = DB::transaction(function () use($request) {
+        $data = DB::transaction(function () use ($request) {
 
             //判断请求中是否包含name=picture的上传文件
-            if(! $request->hasFile('files')){
+            if (!$request->hasFile('files')) {
                 exit('上传文件为空！');
             }
             $files = $request->file('files');
 
             // 获取传过来的图片类别，并将其作为目录名称
-            $pictureTypeId = (int)$request->input('type');
+            $pictureTypeId = (int) $request->input('type');
             $pictureDir = PictureType::find($pictureTypeId)->dir;
 
             // 存储图片数据的数组
             $pictureList = [];
 
-            foreach($files as $k => $file) {
+            foreach ($files as $k => $file) {
                 //判断文件上传过程中是否出错
-                if(! $file->isValid())
+                if (!$file->isValid()) {
                     return response()->json($this->returnData('文件上传失败！'));
+                }
 
                 // 重命名图片
                 $newFileName = uniqid(date('ymd').$k).'.'.$file->getClientOriginalExtension();
@@ -164,65 +168,69 @@ class PictureController extends Controller
                 // 上传图片
                 $image = Image::make($file);
 
-                if(! $image->save($filePath))
+                if (!$image->save($filePath)) {
                     return response()->json($this->returnData('文件保存失败！'));
+                }
 
                 // 获取图片md5并在数据库中查找，若找到数据，则将图片删除，用已存在的返回
                 $md5 = md5_file($filePath);
                 $isPicture = Picture::where(['md5' => $md5])->get(['id', 'name', 'path', 'type_id'])->first();
-                if($isPicture) {
+                if ($isPicture) {
                     // 删除图片
                     unlink($filePath);
                     $pictureList[] = array_merge($isPicture->toArray(), ['exist' => 1, 'url' => asset($isPicture->path)]);
                 } else {
 
                     // 保存图片数据到数据库
-                    $picture = new Picture;
+                    $picture = new Picture();
                     $insertArr = [
                         'type_id' => $pictureTypeId,
-                        'name' => $newFileName,
-                        'path' => $filePath,
-                        'md5'  => $md5,
+                        'name'    => $newFileName,
+                        'path'    => $filePath,
+                        'md5'     => $md5,
                     ];
 
-                    $pictureId = (int)$picture->insertGetId($insertArr);
+                    $pictureId = (int) $picture->insertGetId($insertArr);
 
                     $pictureList[] = [
-                        'id' => $pictureId,
+                        'id'      => $pictureId,
                         'type_id' => $pictureTypeId,
-                        'name' => $newFileName,
-                        'path' => $filePath,
-                        'url' => asset($filePath),
+                        'name'    => $newFileName,
+                        'path'    => $filePath,
+                        'url'     => asset($filePath),
                     ];
 
-                    if(! $pictureId)
+                    if (!$pictureId) {
                         return false;
+                    }
                 }
-
             }
+
             return $pictureList;
         });
 
-        if($data === false)
+        if ($data === false) {
             return response()->json($this->returnData('上传成功，但添加入数据库失败！'));
-        else
+        } else {
             return response()->json($this->returnData('上传成功！', 1, $data));
+        }
     }
 
     public function postList(Request $request)
     {
-        $typeId = (int)$request->input('pictureType');
-        $limit  = $request->input('limit')? (int)$request->input('limit'): $this->pageNum;
-        $offset = $request->input('offset')? (int)$request->input('offset'): 0;
+        $typeId = (int) $request->input('pictureType');
+        $limit = $request->input('limit') ? (int) $request->input('limit') : $this->pageNum;
+        $offset = $request->input('offset') ? (int) $request->input('offset') : 0;
 
         $whereArr = [];
-        if($typeId > 0)
+        if ($typeId > 0) {
             $whereArr = ['type_id' => $typeId];
+        }
 
         $pictures = Picture::orderBy('id', 'desc')->offset($offset)->limit($limit)->where($whereArr)->get(['id', 'name', 'path', 'type_id']);
 
         // 获取图片类型
-        foreach($pictures as $v) {
+        foreach ($pictures as $v) {
             $v->pictureTypeName = $v->getPictureType->name;
             $v->pictureTypeDir = $v->getPictureType->dir;
             $v->url = asset($v->path);
