@@ -4,12 +4,12 @@ return [
     'multi-auth' => [
         'admin' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Admin::class,
+            'model'  => App\Models\Admin::class,
         ],
         'user' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
-        ]
+            'model'  => App\Models\User::class,
+        ],
     ],
     /*
     |--------------------------------------------------------------------------

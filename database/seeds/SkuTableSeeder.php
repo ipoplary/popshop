@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
 
 class SkuTableSeeder extends Seeder
 {
@@ -14,7 +13,7 @@ class SkuTableSeeder extends Seeder
     {
         DB::table('skus')->insert([
             'prefix' => 'SKU',
-            'count' => 5,
+            'count'  => 5,
         ]);
     }
 }

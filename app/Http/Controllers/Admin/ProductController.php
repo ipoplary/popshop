@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Sku;
 use App\Services\PictureService;
 use DB;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -26,18 +25,20 @@ class ProductController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function getIndex(Request $request)
     {
-        $data['categoryId'] = (int)$request->input('category', '0');
-        $data['snapshot']   = (int)$request->input('snapshot', '0');
+        $data['categoryId'] = (int) $request->input('category', '0');
+        $data['snapshot'] = (int) $request->input('snapshot', '0');
 
         // 商品非快照
         $data['products'] = new Product();
 
-        if ($data['snapshot'] === 0)
+        if ($data['snapshot'] === 0) {
             $data['products'] = $data['products']->where('snapshot', 0);
+        }
 
         $data['parents'] = Category::where('parent_id', 0)->get();
 
@@ -67,7 +68,7 @@ class ProductController extends Controller
             } else {
                 // 类别为子类别时，获取该类别的商品，需要进行排序，此时不分页
                 $data['parentId'] = $category->parent_id;
-                $data['childId']  = $data['categoryId'];
+                $data['childId'] = $data['categoryId'];
 
                 $data['sort'] = 1;
                 $data['products'] = $data['products']->where('category_id', $category->id)->orderBy('sort')->paginate(0);
@@ -82,12 +83,11 @@ class ProductController extends Controller
             $data['products'] = $data['products']->paginate($this->pageNum);
 
             foreach ($data['products']->items() as &$v) {
-
                 $v->categoryName = $v->getCategory->name;
             }
         }
 
-        if($data['snapshot'] == 1) {
+        if ($data['snapshot'] == 1) {
             // 有快照不排序
             $data['sort'] = 0;
         }
@@ -105,7 +105,7 @@ class ProductController extends Controller
         // 获取sku
         $sku = SKU::where('prefix', $this->prefix)->first();
 
-        $data['sku'] = $this->prefix . sprintf('%05s', (string)$sku->count);
+        $data['sku'] = $this->prefix.sprintf('%05s', (string) $sku->count);
 
         // 所有父类别
         $data['parents'] = Category::where('parent_id', 0)->get();
@@ -128,28 +128,29 @@ class ProductController extends Controller
 
         // 若sku已存在，添加失败
         $isSkuExsist = Product::where('sku', $request->input('sku'))->count();
-        if($isSkuExsist > 0)
+        if ($isSkuExsist > 0) {
             return response()->json($this->returnData('添加商品失败，该SKU已存在！'));
+        }
 
         // 事务
-        DB::transaction(function() use($request) {
+        DB::transaction(function () use ($request) {
             // banner数组转为json
             $banner = json_encode($request->input('banner'));
 
-            $product = new Product;
-            $product->name         = $request->input('name');
-            $product->sku          = $request->input('sku');
-            $product->category_id  = $request->input('category_id');
-            $product->org_price    = $request->input('org_price');
-            $product->dsc_price    = $request->input('dsc_price');
-            $product->stock        = $request->input('stock');
+            $product = new Product();
+            $product->name = $request->input('name');
+            $product->sku = $request->input('sku');
+            $product->category_id = $request->input('category_id');
+            $product->org_price = $request->input('org_price');
+            $product->dsc_price = $request->input('dsc_price');
+            $product->stock = $request->input('stock');
             $product->introduction = $request->input('introduction');
-            $product->description  = htmlentities($request->input('description'));
-            $product->icon_id      = $request->input('icon_id');
-            $product->banner       = $banner;
+            $product->description = htmlentities($request->input('description'));
+            $product->icon_id = $request->input('icon_id');
+            $product->banner = $banner;
 
             // 商品排序默认为0，显示在最上
-            $product->sort         = 0;
+            $product->sort = 0;
 
             $result = $product->save();
 
@@ -157,7 +158,6 @@ class ProductController extends Controller
             $sku = SKU::where('prefix', $this->prefix)->first();
             $sku->count += 1;
             $sku->save();
-
         });
 
         return response()->json($this->returnData('添加商品成功！', 1));
@@ -195,7 +195,7 @@ class ProductController extends Controller
 
         // 图标及banner处理
         $data['product']->iconDetail = json_encode(PictureService::detailBatch([$data['product']->icon_id], ['id', 'name', 'url']));
-        
+
         $data['product']->bannerDetail = json_encode(PictureService::detailBatch(json_decode($data['product']->banner, true), ['id', 'name', 'url']));
 
         // 所有父类别
@@ -203,7 +203,6 @@ class ProductController extends Controller
         $data['type'] = 'edit';
 
         return view('admin.product.edit', $data);
-
     }
 
     /**
@@ -223,14 +222,16 @@ class ProductController extends Controller
 
         // 若sku不存在，更新失败
         $isSkuExsist = Product::where('sku', $request->input('sku'))->count();
-        if($isSkuExsist < 0)
+        if ($isSkuExsist < 0) {
             return response()->json($this->returnData('更新商品失败，该SKU不存在！'));
+        }
 
         // 事务
-        $productId = DB::transaction(function() use($request, $id){
+        $productId = DB::transaction(function () use ($request,$id) {
             $oldProduct = Product::find($id);
-            if (! $oldProduct)
+            if (!$oldProduct) {
                 return response()->json($this->returnData('找不到商品！'));
+            }
 
             $oldProduct->snapshot = 1;
             $oldProduct->save();
@@ -238,25 +239,26 @@ class ProductController extends Controller
             // banner数组转为json
             $banner = json_encode($request->input('banner'));
 
-            $product = new Product;
-            $product->name         = $request->input('name');
-            $product->sku          = $request->input('sku');
-            $product->category_id  = $request->input('category_id');
-            $product->org_price    = $request->input('org_price');
-            $product->dsc_price    = $request->input('dsc_price');
-            $product->stock        = $request->input('stock');
+            $product = new Product();
+            $product->name = $request->input('name');
+            $product->sku = $request->input('sku');
+            $product->category_id = $request->input('category_id');
+            $product->org_price = $request->input('org_price');
+            $product->dsc_price = $request->input('dsc_price');
+            $product->stock = $request->input('stock');
             $product->introduction = $request->input('introduction');
-            $product->description  = htmlentities($request->input('description'));
-            $product->icon_id      = $request->input('icon_id');
-            $product->banner       = $banner;
+            $product->description = htmlentities($request->input('description'));
+            $product->icon_id = $request->input('icon_id');
+            $product->banner = $banner;
 
             // 商品排序默认为0，显示在最上
-            $product->sort         = $oldProduct->sort;
+            $product->sort = $oldProduct->sort;
 
             $result = $product->save();
-            return $product->id;
 
+            return $product->id;
         });
+
         return response()->json($this->returnData('修改商品成功，原有商品改为快照！', 1, ['id' => $productId]));
         // return response()->json($this->returnData('修改商品失败！'));
     }
@@ -273,21 +275,25 @@ class ProductController extends Controller
         // 将商品快照值设为1
         $product = Product::find($id);
 
-        if ($product === null)
+        if ($product === null) {
             return response()->json($this->returnData('删除失败，没有找到该商品！'));
+        }
 
         $product->snapshot = 1;
         $result = $product->save();
-        if (! $result)
+        if (!$result) {
             return response()->json($this->returnData('删除失败！'));
-        else
+        } else {
             return response()->json($this->returnData('删除成功！', 1));
+        }
     }
 
     /**
-     * 排序操作
-     * @param  Request $request 请求数据
-     * @return json             排序结果
+     * 排序操作.
+     *
+     * @param Request $request 请求数据
+     *
+     * @return json 排序结果
      */
     public function postSort(Request $request)
     {
@@ -302,24 +308,25 @@ class ProductController extends Controller
     }
 
     /**
-     * 验证输入的产品信息
-     * @param  Request $request 请求数据
+     * 验证输入的产品信息.
+     *
+     * @param Request $request 请求数据
+     *
      * @return void
      */
     private function validateInfo(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|max:50',
-            'sku'=> 'required',
-            'category_id'=> 'required|integer',
-            'org_price'=> 'numeric|min:0',
-            'dsc_price'=> 'required|numeric|min:0',
-            'stock'=> 'required|integer|min:0',
-            'introduction'=> 'required|string',
-            'description'=> 'required',
-            'icon_id'=> 'required|integer',
-            'banner'=> 'required',
+            'name'         => 'required|max:50',
+            'sku'          => 'required',
+            'category_id'  => 'required|integer',
+            'org_price'    => 'numeric|min:0',
+            'dsc_price'    => 'required|numeric|min:0',
+            'stock'        => 'required|integer|min:0',
+            'introduction' => 'required|string',
+            'description'  => 'required',
+            'icon_id'      => 'required|integer',
+            'banner'       => 'required',
         ]);
-        return;
     }
 }

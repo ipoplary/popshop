@@ -13,11 +13,11 @@ class PictureTypeTableSeeder extends Seeder
     {
         DB::table('picture_types')->insert([
             [
-                'dir' => 'product',
+                'dir'  => 'product',
                 'name' => '商品',
             ],
             [
-                'dir' => 'category',
+                'dir'  => 'category',
                 'name' => '类别',
             ],
 

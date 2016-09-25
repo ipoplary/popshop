@@ -12,18 +12,16 @@
 */
 
 Route::group(['namespace' => 'Admin', 'domain' => env('ADMIN_URL', 'admin.popshop.dev'), 'as' => 'admin'], function () {
+    Route::get('login', 'AuthController@getLogin');
+    Route::post('login', 'AuthController@postLogin');
 
-        Route::get('login', 'AuthController@getLogin');
-        Route::post('login', 'AuthController@postLogin');
+    Route::get('register', 'AuthController@getRegister');
+    Route::post('register', 'AuthController@postRegister');
 
-        Route::get('register', 'AuthController@getRegister');
-        Route::post('register', 'AuthController@postRegister');
-
-        Route::get('logout', 'AuthController@getLogout');
+    Route::get('logout', 'AuthController@getLogout');
 
         // Route::controller('test', 'TestController');
-        Route::group(['middleware' => 'auth'], function() {
-
+        Route::group(['middleware' => 'auth'], function () {
             Route::controller('home', 'HomeController');
 
             Route::get('/', 'HomeController@getIndex');
